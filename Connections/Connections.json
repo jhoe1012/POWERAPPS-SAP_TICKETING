@@ -1,0 +1,115 @@
+{
+  "1bbeb66f-459a-4ca1-8e6d-7bc7c6aff95e": {
+    "connectionRef": {
+      "apiTier": "Standard",
+      "displayName": "SharePoint",
+      "iconUri": "https://connectoricons-prod.azureedge.net/releases/v1.0.1627/1.0.1627.3238/sharepointonline/icon.png",
+      "id": "/providers/microsoft.powerapps/apis/shared_sharepointonline",
+      "parameterHints": {},
+      "parameterHintsV2": {}
+    },
+    "datasets": {
+      "https://goldilocksbakeshopinc.sharepoint.com": {
+        "dataSources": {
+          "SAP_TICKETING_Action_Taken": {
+            "tableName": "5698c7cc-1ee1-4731-a81e-21cb96055442"
+          },
+          "SAP_TICKETING_DB": {
+            "tableName": "19536562-8d39-40ca-8dff-7417ab20146a"
+          },
+          "SAP_TICKETING_email_setup": {
+            "tableName": "62c9e486-1350-4224-8402-d3a2bfbba4f9"
+          },
+          "SAP_TICKETING_Issues_dd": {
+            "tableName": "6f79a52c-9b67-44e0-8d26-b2d8545b1d0c"
+          },
+          "SAP_TICKETING_modules_dd": {
+            "tableName": "77b9d08b-8561-4bbf-b64d-e37c3f087800"
+          },
+          "SAP_TICKETING_transfer_ticket": {
+            "tableName": "1019fdf2-a3ea-429e-bb1e-12ada646005a"
+          },
+          "SAP_TICKETING_Type": {
+            "tableName": "e0cf4a65-6bb5-4b30-8625-1d1692a5095c"
+          },
+          "SAP_TICKETING_urgencies_dd": {
+            "tableName": "624d6556-8d5f-4671-93ba-00ca2b3934de"
+          }
+        }
+      }
+    },
+    "dataSources": [
+      "TNCR_Truckers",
+      "SAP_TICKETING_DB",
+      "SAP_TICKETING_Issues_dd",
+      "SAP_TICKETING_urgencies_dd",
+      "SAP_TICKETING_Action_Taken",
+      "SAP_TICKETING_email_setup",
+      "SAP_TICKETING_modules_dd",
+      "SAP_TICKETING_transfer_ticket",
+      "SAP_TICKETING_Type"
+    ],
+    "dependencies": {},
+    "dependents": [],
+    "id": "1bbeb66f-459a-4ca1-8e6d-7bc7c6aff95e"
+  },
+  "815d3bd4-dae8-4378-8fb6-ed7af71ede08": {
+    "connectionRef": {
+      "apiTier": "Standard",
+      "displayName": "SharePoint",
+      "iconUri": "https://connectoricons-prod.azureedge.net/releases/v1.0.1627/1.0.1627.3238/sharepointonline/icon.png",
+      "id": "/providers/microsoft.powerapps/apis/shared_sharepointonline",
+      "parameterHints": {},
+      "parameterHintsV2": {}
+    },
+    "datasets": {
+      "https://goldilocksbakeshopinc.sharepoint.com": {
+        "dataSources": {
+          "SAP_TICKETING_groupings": {
+            "tableName": "01871d75-3202-4baf-8f44-4a38725f95fd"
+          }
+        }
+      }
+    },
+    "dataSources": [
+      "SAP_TICKETING_groupings"
+    ],
+    "dependencies": {},
+    "dependents": [],
+    "id": "815d3bd4-dae8-4378-8fb6-ed7af71ede08"
+  },
+  "c4e59e0e-da99-4c1a-baa7-d0d0b51f7bc3": {
+    "connectionRef": {
+      "apiTier": "Standard",
+      "displayName": "Office 365 Outlook",
+      "iconUri": "https://connectoricons-prod.azureedge.net/releases/v1.0.1626/1.0.1626.3238/office365/icon.png",
+      "id": "/providers/microsoft.powerapps/apis/shared_office365",
+      "parameterHints": {},
+      "parameterHintsV2": {}
+    },
+    "datasets": {},
+    "dataSources": [
+      "Office365Outlook"
+    ],
+    "dependencies": {},
+    "dependents": [],
+    "id": "c4e59e0e-da99-4c1a-baa7-d0d0b51f7bc3"
+  },
+  "ef53532d-e824-4cba-8110-c7a180b40df9": {
+    "connectionRef": {
+      "apiTier": "Standard",
+      "displayName": "Office 365 Users",
+      "iconUri": "https://connectoricons-prod.azureedge.net/releases/v1.0.1626/1.0.1626.3238/office365users/icon.png",
+      "id": "/providers/microsoft.powerapps/apis/shared_office365users",
+      "parameterHints": {},
+      "parameterHintsV2": {}
+    },
+    "datasets": {},
+    "dataSources": [
+      "Office365Users"
+    ],
+    "dependencies": {},
+    "dependents": [],
+    "id": "ef53532d-e824-4cba-8110-c7a180b40df9"
+  }
+}

@@ -1,0 +1,50 @@
+CmpntLoading As CanvasComponent:
+    Fill: =RGBA(0, 0, 0, 0)
+    Height: =Max(App.Height, App.MinScreenHeight)
+    Width: =Max(App.Width, App.MinScreenWidth)
+    X: =0
+    Y: =0
+    ZIndex: =1
+
+    Rectangle7 As rectangle:
+        BorderColor: =RGBA(0, 0, 0, 0)
+        BorderStyle: =BorderStyle.None
+        BorderThickness: =2
+        DisabledFill: =RGBA(166, 166, 166, 1)
+        Fill: =RGBA(230, 230, 230, .1)
+        FocusedBorderThickness: =4
+        Height: =Parent.Height
+        Width: =Parent.Width
+        ZIndex: =1
+
+    HtmlLoadingBG As htmlViewer:
+        AutoHeight: =true
+        Height: =107
+        HtmlText: |-
+            ="<div style='margin:10px 10px;width:120px;height:80px;background-color:#fefefe;box-shadow: 0px 0px 3px 3px rgba(86, 86, 86, 0.66); border-radius:10px';'>
+            <center>
+            <img src='https://goldilocksbakeshopinc.sharepoint.com/SiteAssets/Spinner-1s-244px.gif' alt='' srcset='' width='90' height='80'>
+            </center>
+            </div>"
+        OnSelect: =
+        Width: =149
+        X: =(Parent.Width * 0.5 ) - (Self.Width * 0.5)
+        Y: =(Parent.Height * 0.5 ) - (Self.Height * 0.5)
+        ZIndex: =2
+
+    Image4 As image:
+        BorderColor: =RGBA(0, 0, 0, 0)
+        BorderStyle: =BorderStyle.None
+        BorderThickness: =2
+        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+        DisabledFill: =RGBA(0, 0, 0, 0)
+        FocusedBorderThickness: =4
+        HoverBorderColor: =RGBA(0, 0, 0, 0)
+        HoverFill: =RGBA(0, 0, 0, 0)
+        Image: ='Spinner-1s-244px'
+        PressedBorderColor: =RGBA(0, 0, 0, 0)
+        PressedFill: =RGBA(0, 0, 0, 0)
+        X: =40
+        Y: =40
+        ZIndex: =4
+

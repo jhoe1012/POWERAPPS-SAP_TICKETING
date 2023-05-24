@@ -1,0 +1,58 @@
+CmpntHeader As CanvasComponent:
+    Fill: =RGBA(0, 0, 0, 0)
+    HeaderText: ="Text"
+    Height: =30
+    HomeNavigation: =App.ActiveScreen
+    ShowIcon: =true
+    Width: =1366
+    X: =0
+    Y: =0
+    ZIndex: =1
+
+    RectQuickActionBar As rectangle:
+        BorderColor: =RGBA(255, 255, 0, 1)
+        Fill: =RGBA(254, 209, 46, 1)
+        Height: =30
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblHeader As label:
+        Align: =Align.Justify
+        BorderColor: =RGBA(0, 0, 0, 0)
+        BorderStyle: =BorderStyle.None
+        BorderThickness: =2
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FocusedBorderThickness: =4
+        Font: =Font.Arial
+        FontWeight: =FontWeight.Bold
+        Height: =30
+        PaddingLeft: =100
+        PaddingTop: =3
+        Size: =18
+        Text: =CmpntHeader.HeaderText
+        Width: =1366
+        ZIndex: =2
+
+    IcnHome As icon.Home:
+        BorderColor: =RGBA(166, 166, 166, 1)
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+        DisabledColor: =RGBA(220, 220, 220, 1)
+        DisabledFill: =RGBA(0, 0, 0, 0)
+        FocusedBorderThickness: =4
+        Height: =30
+        HoverBorderColor: =RGBA(0, 0, 0, 0)
+        HoverColor: =ColorFade(RGBA(0, 0, 0 , 1), -30%)
+        HoverFill: =RGBA(0, 0, 0, 0)
+        Icon: =Icon.BackArrow
+        OnSelect: =Navigate(CmpntHeader.HomeNavigation, ScreenTransition.Fade)
+        PressedBorderColor: =RGBA(0, 0, 0, 0)
+        PressedColor: =ColorFade(RGBA(105, 121, 126, 1), -30%)
+        PressedFill: =RGBA(0, 0, 0, 0)
+        Visible: =CmpntHeader.ShowIcon
+        Width: =44
+        X: =19
+        ZIndex: =3
+

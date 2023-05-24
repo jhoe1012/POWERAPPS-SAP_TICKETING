@@ -1,0 +1,656 @@
+App As appinfo:
+    BackEnabled: =false
+    OnStart: |
+        =Concurrent(
+            Set(
+                gblUserO365Info,
+                {
+                    email: User().Email,
+                    name: User().FullName
+                }
+            ),
+            Set(
+                gblAppUri,
+                "https://apps.powerapps.com/play/5f1657c0-3a6f-49d2-88df-ba465586cd71?tenantId=af7302a2-b536-4d8b-bc51-09da778b3c30"
+            ),
+            Set(
+                gblTicketId,
+                Value(Param("ticket_id"))
+            )
+        );
+        Set(
+            gblUserRole,
+            LookUp(
+                SAP_TICKETING_email_setup,
+                Title = gblUserO365Info.email
+            )
+        );
+        //CHECK IF URL CONTAINS TICKET ID THEN REDIRECT TO FORM
+        If(
+            gblTicketId <> 0,
+            Set(
+                gblSapTicketingList,
+                LookUp(
+                    SAP_TICKETING_DB,
+                    ID = gblTicketId
+                )
+            );
+            ViewForm(FrmSapTicketing)
+        );
+        // GLOBAL VARIABLES FOR DESIGN
+        Concurrent(
+            Set(
+                gblPCard,
+                {
+                    Height: 43,
+                    BorderColor: RGBA(
+                        166,
+                        166,
+                        166,
+                        1
+                    ),
+                    BorderStyle: BorderStyle.Solid,
+                    BorderThickness: 0
+                }
+            ),
+            Set(
+                gblPLabel,
+                {
+                    Font: Font.Arial,
+                    FontWeight: FontWeight.Semibold,
+                    Color: RGBA(
+                        51,
+                        51,
+                        51,
+                        1
+                    ),
+                    Fill: RGBA(
+                        0,
+                        0,
+                        0,
+                        0
+                    ),
+                    BorderColor: RGBA(
+                        0,
+                        0,
+                        0,
+                        0
+                    ),
+                    BorderStyle: BorderStyle.None,
+                    BorderThickness: 2,
+                    Size: 11,
+                    Height: 36,
+                    X: 30,
+                    Y: 5
+                }
+            ),
+            Set(
+                gblPInput,
+                {
+                    Font: Font.Arial,
+                    MaxLength: 40,
+                    FontWeight: FontWeight.Normal,
+                    Color: RGBA(
+                        51,
+                        51,
+                        51,
+                        1
+                    ),
+                    Fill: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    Size: 11,
+                    Height: 26,
+                    Y: 10,
+                    ChevronFill: RGBA(
+                        33,
+                        33,
+                        33,
+                        1
+                    ),
+                    ChevronHoverFill: RGBA(
+                        33,
+                        33,
+                        33,
+                        1
+                    ),
+                    ChevronBackground: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    ChevronHoverBackground: RGBA(
+                        212,
+                        212,
+                        212,
+                        1
+                    ),
+                    BorderColor: RGBA(
+                        166,
+                        166,
+                        166,
+                        1
+                    ),
+                    BorderStyle: BorderStyle.Solid,
+                    BorderThickness: 1,
+                    FocusedBorderThickness: 2,
+                    PressedColor: RGBA(
+                        1,
+                        1,
+                        1,
+                        1
+                    ),
+                    PressedBorderColor: ColorFade(
+                        RGBA(
+                            105,
+                            121,
+                            126,
+                            1
+                        ),
+                        -30%
+                    ),
+                    PressedFill: RGBA(
+                        212,
+                        212,
+                        212,
+                        0
+                    ),
+                    HoverColor: RGBA(
+                        51,
+                        51,
+                        51,
+                        1
+                    ),
+                    HoverBorderColor: ColorFade(
+                        RGBA(
+                            105,
+                            121,
+                            126,
+                            1
+                        ),
+                        -30%
+                    ),
+                    HoverFill: RGBA(
+                        212,
+                        212,
+                        212,
+                        0
+                    ),
+                    SelectionTagFill: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    SelectionTagColor: RGBA(
+                        51,
+                        51,
+                        51,
+                        1
+                    )
+                }
+            ),
+            Set(
+                gblPError,
+                {
+                    Font: Font.Arial,
+                    FontWeight: FontWeight.Semibold,
+                    Color: RGBA(
+                        168,
+                        0,
+                        0,
+                        1
+                    ),
+                    Size: 9,
+                    Height: 10,
+                    Fill: RGBA(
+                        0,
+                        0,
+                        0,
+                        0
+                    ),
+                    BorderColor: RGBA(
+                        0,
+                        0,
+                        0,
+                        0
+                    ),
+                    BorderStyle: BorderStyle.None,
+                    BorderThickness: 2
+                }
+            ),
+            Set(
+                gblPButtonSave,
+                {
+                    BorderColor: RGBA(
+                        11,
+                        94,
+                        215,
+                        1
+                    ),
+                    RadiusTopLeft: 5,
+                    RadiusTopRight: 5,
+                    RadiusBottomLeft: 5,
+                    RadiusBottomRight: 5,
+                    PressedBorderColor: ColorFade(
+                        RGBA(
+                            11,
+                            94,
+                            215,
+                            1
+                        ),
+                        50%
+                    ),
+                    HoverBorderColor: RGBA(
+                        11,
+                        94,
+                        215,
+                        1
+                    ),
+                    BorderStyle: BorderStyle.Solid,
+                    BorderThickness: 2,
+                    FocusedBorderColor: ColorFade(
+                        RGBA(
+                            11,
+                            94,
+                            215,
+                            1
+                        ),
+                        45%
+                    ),
+                    FocusedBorderThickness: 4,
+                    Color: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    PressedColor: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    HoverColor: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    Fill: RGBA(
+                        11,
+                        94,
+                        215,
+                        1
+                    ),
+                    PressedFill: ColorFade(
+                        RGBA(
+                            11,
+                            94,
+                            215,
+                            1
+                        ),
+                        10%
+                    ),
+                    HoverFill: ColorFade(
+                        RGBA(
+                            11,
+                            94,
+                            215,
+                            1
+                        ),
+                        -10%
+                    ),
+                    Font: Font.'Segoe UI',
+                    Size: 13,
+                    FontWeight: FontWeight.Semibold,
+                    Width: 140,
+                    Height: 35
+                }
+            ),
+            Set(
+                gblPButtonCancel,
+                {
+                    BorderColor: RGBA(
+                        220,
+                        53,
+                        69,
+                        1
+                    ),
+                    RadiusTopLeft: 5,
+                    RadiusTopRight: 5,
+                    RadiusBottomLeft: 5,
+                    RadiusBottomRight: 5,
+                    PressedBorderColor: ColorFade(
+                        RGBA(
+                            220,
+                            53,
+                            69,
+                            1
+                        ),
+                        50%
+                    ),
+                    HoverBorderColor: RGBA(
+                        220,
+                        53,
+                        69,
+                        1
+                    ),
+                    BorderStyle: BorderStyle.Solid,
+                    BorderThickness: 2,
+                    FocusedBorderColor: ColorFade(
+                        RGBA(
+                            220,
+                            53,
+                            69,
+                            1
+                        ),
+                        45%
+                    ),
+                    FocusedBorderThickness: 4,
+                    Color: RGBA(
+                        220,
+                        53,
+                        69,
+                        1
+                    ),
+                    PressedColor: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    HoverColor: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    Fill: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    PressedFill: ColorFade(
+                        RGBA(
+                            220,
+                            53,
+                            69,
+                            1
+                        ),
+                        10%
+                    ),
+                    HoverFill: ColorFade(
+                        RGBA(
+                            220,
+                            53,
+                            69,
+                            1
+                        ),
+                        -10%
+                    ),
+                    Font: Font.'Segoe UI',
+                    Size: 13,
+                    FontWeight: FontWeight.Semibold,
+                    Width: 140,
+                    Height: 35
+                }
+            ),
+            Set(
+                gblPButtonEdit,
+                {
+                    BorderColor: RGBA(
+                        25,
+                        135,
+                        84,
+                        1
+                    ),
+                    RadiusTopLeft: 5,
+                    RadiusTopRight: 5,
+                    RadiusBottomLeft: 5,
+                    RadiusBottomRight: 5,
+                    PressedBorderColor: ColorFade(
+                        RGBA(
+                            25,
+                            135,
+                            84,
+                            1
+                        ),
+                        50%
+                    ),
+                    HoverBorderColor: RGBA(
+                        25,
+                        135,
+                        84,
+                        1
+                    ),
+                    BorderStyle: BorderStyle.Solid,
+                    BorderThickness: 2,
+                    FocusedBorderColor: ColorFade(
+                        RGBA(
+                            25,
+                            135,
+                            84,
+                            1
+                        ),
+                        45%
+                    ),
+                    FocusedBorderThickness: 4,
+                    Color: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    PressedColor: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    HoverColor: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    Fill: RGBA(
+                        25,
+                        135,
+                        84,
+                        1
+                    ),
+                    PressedFill: ColorFade(
+                        RGBA(
+                            25,
+                            135,
+                            84,
+                            1
+                        ),
+                        10%
+                    ),
+                    HoverFill: ColorFade(
+                        RGBA(
+                            25,
+                            135,
+                            84,
+                            1
+                        ),
+                        -10%
+                    ),
+                    Font: Font.'Segoe UI',
+                    Size: 13,
+                    FontWeight: FontWeight.Semibold,
+                    Width: 140,
+                    Height: 35
+                }
+            ),
+            Set(
+                gblBtnOutlineWarning,
+                {
+                    BorderColor: RGBA(
+                        25,
+                        135,
+                        84,
+                        1
+                    ),
+                    PressedBorderColor: ColorFade(
+                        RGBA(
+                            25,
+                            135,
+                            84,
+                            1
+                        ),
+                        50%
+                    ),
+                    HoverBorderColor: RGBA(
+                        25,
+                        135,
+                        84,
+                        1
+                    ),
+                    FocusedBorderColor: ColorFade(
+                        RGBA(
+                            25,
+                            135,
+                            84,
+                            1
+                        ),
+                        45%
+                    ),
+                    Color: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    PressedColor: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    HoverColor: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    Fill: RGBA(
+                        25,
+                        135,
+                        84,
+                        1
+                    ),
+                    PressedFill: ColorFade(
+                        RGBA(
+                            25,
+                            135,
+                            84,
+                            1
+                        ),
+                        10%
+                    ),
+                    HoverFill: ColorFade(
+                        RGBA(
+                            25,
+                            135,
+                            84,
+                            1
+                        ),
+                        -10%
+                    )
+                }
+            ),
+            Set(
+                gblBtnOutlinePrimary,
+                {
+                    BorderColor: RGBA(
+                        23, 162, 184,1
+                    ),
+                    PressedBorderColor: ColorFade(
+                        RGBA(
+                            23, 162, 184,1
+                        ),
+                        50%
+                    ),
+                    HoverBorderColor: RGBA(
+                        23, 162, 184,1
+                        
+                    ),
+                    FocusedBorderColor: ColorFade(
+                        RGBA(
+                            23, 162, 184,1
+                            
+                        ),
+                        45%
+                    ),
+                    Color: RGBA(
+                        23, 162, 184,1
+                        
+                    ),
+                    PressedColor: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    HoverColor: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    Fill: RGBA(
+                        255,
+                        255,
+                        255,
+                        1
+                    ),
+                    PressedFill: ColorFade(
+                        RGBA(
+                            23, 162, 184,1
+                        ),
+                        10%
+                    ),
+                    HoverFill: ColorFade(
+                        RGBA(
+                            23, 162, 184,1
+                            
+                        ),
+                        -10%
+                    )
+                }
+            )
+        );
+    StartScreen: |-
+        =/*With(
+            {
+                wDetails: LookUp(
+                    SAP_TICKETING_email_setup,
+                    Title = User().Email
+                )
+            },
+            If(
+                wDetails.is_admin || wDetails.is_assign,
+                ScrnSapticketingView,
+                ScrnSapticketingForm
+            )
+        )*/
+        
+        //ScrnSapticketingView
+        
+        If(!IsBlank(Param("ticket_id")),ScrnSapticketingForm,ScrnSapticketingView)
+
+    Host As hostControl.DefaultHostControlVariant:
+        OnCancel: =false
+        OnEdit: =false
+        OnNew: =false
+        OnSave: =false
+        OnView: =false
+

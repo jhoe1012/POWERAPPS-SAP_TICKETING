@@ -1,0 +1,3842 @@
+ScrnSapticketingForm As screen:
+    LoadingSpinner: =LoadingSpinner.Controls
+    LoadingSpinnerColor: =RGBA(0, 120, 212, 1)
+    OnHidden: |
+        =UpdateContext(
+            {
+                lclEditPressed: false,
+                lclShowUpdateAction: false,
+                lclResolved: false,
+                lclUpdateStatus: false
+            }
+        );
+    OnVisible: |-
+        =UpdateContext({lclShowLoading: false});
+        SetFocus(DataCardValue35)
+
+    Canvas1_3 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =Parent.Height 
+        Width: =Parent.Width
+        Y: =CmpntHeader_3.Y+CmpntHeader_3.Height
+        ZIndex: =1
+
+        DataCard4_3 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =FrmSapTicketing.Height
+            Update: =
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            FrmSapTicketing As form:
+                AcceptsFocus: =false
+                BorderColor: =RGBA(166, 166, 166, 1)
+                DataSource: =SAP_TICKETING_DB
+                DefaultMode: =FormMode.New
+                Height: =Max(DataCard2.Y + DataCard2.Height + 50,  600)
+                Item: =gblSapTicketingList
+                NumberOfColumns: =12
+                OnFailure: |-
+                    =UpdateContext({lclShowLoading: false});
+                OnSuccess: |-
+                    =If(
+                        lclEditPressed,
+                        Notify(
+                            "Ticket updated sucessfully.",
+                            NotificationType.Success,
+                            3000
+                        ),
+                        Patch(
+                            SAP_TICKETING_DB,
+                            FrmSapTicketing.LastSubmit,
+                            {Counter: lclCounter}
+                        );
+                        Notify(
+                            "Ticket added sucessfully.",
+                            NotificationType.Success,
+                            3000
+                        );
+                        
+                    );
+                    UpdateContext({lclShowLoading: false});
+                    Navigate(
+                        ScrnSapticketingView,
+                        ScreenTransition.Fade
+                    );
+                    Select(BtnSendEmail)
+                Width: |-
+                    =If(
+                        ScrnSapticketingForm.Size > ScreenSize.Large,
+                        Parent.Width - (100*2),
+                        ScrnSapticketingForm.Size = ScreenSize.Large,
+                        Parent.Width - (50*2),
+                        Parent.Width
+                    )
+                X: |-
+                    =If(
+                        ScrnSapticketingForm.Size > ScreenSize.Large,
+                        Parent.Width - Self.Width - 100,
+                        ScrnSapticketingForm.Size = ScreenSize.Large,
+                        Parent.Width - Self.Width - 50,
+                        0
+                    )
+                ZIndex: =1
+
+                "'User Email_DataCard1' As typedDataCard.textualEditCard":
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="UserEmail"
+                    Default: =ThisItem.'User Email'
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="Email"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =70
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "UserEmail")
+                    Required: =false
+                    Update: =DataCardValue1.Text
+                    Width: =Parent.Width * 0.5
+                    X: =6
+                    Y: =0
+                    ZIndex: =1
+
+                    DataCardKey1_24 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =1
+
+                    DataCardValue1 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        Color: =gblPInput.Color
+                        Default: =If(FrmSapTicketing.Mode = FormMode.New, gblUserO365Info.email, Parent.Default)
+                        DelayOutput: =true
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisabledFill: =ColorFade(Self.Fill,-2%)
+                        DisplayMode: =DataCardValue26.DisplayMode // If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =gblPInput.FontWeight
+                        Height: =gblPInput.Height
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_24.Y + DataCardKey1_24.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage1_25 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue1.X
+                        Y: =DataCardValue1.Y + DataCardValue1.Height
+                        ZIndex: =3
+
+                    StarVisible1_25 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_24.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_24.Y
+                        ZIndex: =4
+
+                Location_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="Location"
+                    Default: =ThisItem.Location
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: =DataSourceInfo([@SAP_TICKETING_DB],DataSourceInfo.DisplayName,"Location")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "Location")
+                    Required: =true
+                    Update: =DataCardValue3.Selected.Value
+                    Width: =Parent.Width * 0.5
+                    X: =6
+                    Y: =1
+                    ZIndex: =1
+
+                    DataCardValue3 As combobox:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        ChevronBackground: =gblPInput.ChevronBackground
+                        ChevronDisabledBackground: =RGBA(244, 244, 244, 0)
+                        ChevronDisabledFill: =RGBA(166, 166, 166, 0)
+                        ChevronFill: =gblPInput.ChevronFill
+                        ChevronHoverBackground: =gblPInput.ChevronHoverBackground
+                        ChevronHoverFill: =gblPInput.ChevronHoverFill
+                        Color: =gblPInput.Color
+                        DefaultSelectedItems: |-
+                            =If(
+                                FrmSapTicketing.Mode <> FormMode.New,
+                                Table({Value: ThisItem.Location})
+                            )
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisabledFill: =Self.Fill
+                        DisplayFields: =["Value"]
+                        DisplayMode: =If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =gblPInput.Font
+                        Height: =gblPInput.Height
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        InputTextPlaceholder: =""
+                        IsSearchable: =false
+                        Items: =["Bread Plant", "Cake Plant",  "Cainta Warehouse","Food Plant","Greenfield", "Work From Home"]
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        SearchFields: =["Value"]
+                        SearchItems: =[]
+                        SelectionFill: =RGBA(0, 120, 212, 1)
+                        SelectionTagColor: =gblPInput.SelectionTagColor
+                        SelectionTagFill: =gblPInput.SelectionTagFill
+                        SelectMultiple: =false
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_31.Y + DataCardKey1_31.Height + 5
+                        ZIndex: =1
+
+                    DataCardKey1_31 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =2
+
+                    ErrorMessage1_33 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue3.X
+                        Y: =DataCardValue3.Y + DataCardValue3.Height
+                        ZIndex: =3
+
+                    StarVisible1_33 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_31.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_31.Y
+                        ZIndex: =4
+
+                ConcernDepartment_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="ConcernDepartment"
+                    Default: =ThisItem.ConcernDepartment
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="Concern Department"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "ConcernDepartment")
+                    Required: =false
+                    Update: =DataCardValue4.Text
+                    Width: =Parent.Width * 0.5
+                    X: =6
+                    Y: =2
+                    ZIndex: =1
+
+                    DataCardKey1_32 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =1
+
+                    DataCardValue4 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        Color: =gblPInput.Color
+                        Default: |-
+                            =If(
+                                FrmSapTicketing.Mode = FormMode.New,
+                                LookUp(
+                                    SAP_TICKETING_email_setup,
+                                    Title in DataCardValue9.Text
+                                ).Department,
+                                Parent.Default
+                            )
+                        DelayOutput: =true
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisabledFill: =ColorFade(Self.Fill,-2%)
+                        DisplayMode: =DisplayMode.Disabled // If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =gblPInput.FontWeight
+                        Height: =gblPInput.Height
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_32.Y + DataCardKey1_32.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage1_34 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue4.X
+                        Y: =DataCardValue4.Y + DataCardValue4.Height
+                        ZIndex: =3
+
+                    StarVisible1_34 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_32.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_32.Y
+                        ZIndex: =4
+
+                Urgency_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="Urgency"
+                    Default: =ThisItem.Urgency
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: |
+                        ="Describe the urgency of the issue"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =70
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "Urgency")
+                    Required: =true
+                    Update: =DataCardValue6.Selected.Title
+                    Width: =Parent.Width
+                    X: =0
+                    Y: =4
+                    ZIndex: =1
+
+                    DataCardValue6 As combobox:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        ChevronBackground: =gblPInput.ChevronBackground
+                        ChevronDisabledBackground: =RGBA(244, 244, 244, 0)
+                        ChevronDisabledFill: =RGBA(166, 166, 166, 0)
+                        ChevronFill: =gblPInput.ChevronFill
+                        ChevronHoverBackground: =gblPInput.ChevronHoverBackground
+                        ChevronHoverFill: =gblPInput.ChevronHoverFill
+                        Color: =gblPInput.Color
+                        DefaultSelectedItems: |-
+                            =If(
+                                FrmSapTicketing.Mode <> FormMode.New,
+                                Table({Title: ThisItem.Urgency})
+                            )
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisabledFill: =Self.Fill
+                        DisplayFields: =["Title"]
+                        DisplayMode: =If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =gblPInput.Font
+                        Height: =gblPInput.Height
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        InputTextPlaceholder: =""
+                        IsSearchable: =false
+                        Items: =SAP_TICKETING_urgencies_dd.Title
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        SearchFields: =["Title"]
+                        SearchItems: =[]
+                        SelectionFill: =RGBA(0, 120, 212, 1)
+                        SelectionTagColor: =gblPInput.SelectionTagColor
+                        SelectionTagFill: =gblPInput.SelectionTagFill
+                        SelectMultiple: =false
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_29.Y + DataCardKey1_29.Height + 5
+                        ZIndex: =1
+
+                    DataCardKey1_29 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =2
+
+                    ErrorMessage1_31 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue6.X
+                        Y: =DataCardValue6.Y + DataCardValue6.Height
+                        ZIndex: =3
+
+                    StarVisible1_31 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_29.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_29.Y
+                        ZIndex: =4
+
+                SubArea_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="SubArea"
+                    Default: =ThisItem.SubArea
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="Sub Area"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "SubArea")
+                    Required: =false //If(DataCardValue33.Selected.Title in ("FI, CO,SD,MM,PP"),true,false)
+                    Update: =DataCardValue2.Selected.Result
+                    Visible: =false
+                    Width: =Parent.Width * 0.5
+                    X: =3
+                    Y: =4
+                    ZIndex: =1
+
+                    DataCardValue2 As combobox:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        ChevronBackground: =gblPInput.ChevronBackground
+                        ChevronDisabledBackground: =RGBA(244, 244, 244, 0)
+                        ChevronDisabledFill: =RGBA(166, 166, 166, 0)
+                        ChevronFill: =gblPInput.ChevronFill
+                        ChevronHoverBackground: =gblPInput.ChevronHoverBackground
+                        ChevronHoverFill: =gblPInput.ChevronHoverFill
+                        Color: =gblPInput.Color
+                        DefaultSelectedItems: |-
+                            =If(
+                                FrmSapTicketing.Mode <> FormMode.New,
+                                Table({Result: ThisItem.SubArea})
+                            )
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisabledFill: =Self.Fill
+                        DisplayFields: =["Result"]
+                        DisplayMode: =If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =gblPInput.Font
+                        Height: =gblPInput.Height
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        InputTextPlaceholder: =""
+                        IsSearchable: =false
+                        Items: |-
+                            =ForAll(Split( DataCardValue33.Selected.SubArea,"|"), {Result: ThisRecord.Value})
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        SearchFields: =["Result"]
+                        SearchItems: =[]
+                        SelectionFill: =RGBA(0, 120, 212, 1)
+                        SelectionTagColor: =gblPInput.SelectionTagColor
+                        SelectionTagFill: =gblPInput.SelectionTagFill
+                        SelectMultiple: =false
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_33.Y + DataCardKey1_33.Height + 5
+                        ZIndex: =1
+
+                    DataCardKey1_33 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =2
+
+                    ErrorMessage1_35 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue2.X
+                        Y: =DataCardValue2.Y + DataCardValue2.Height
+                        ZIndex: =3
+
+                    StarVisible1_35 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_33.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_33.Y
+                        ZIndex: =4
+
+                DataCard2 As typedDataCard.blankCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DisplayMode: =DisplayMode.Edit
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =If(FrmSapTicketing.Mode <> FormMode.New, 0, 100)
+                    Width: =Parent.Width
+                    X: =0
+                    Y: =7
+                    ZIndex: =1
+
+                    BtnSave As button:
+                        BorderColor: =gblPButtonSave.BorderColor
+                        BorderStyle: =gblPButtonSave.BorderStyle
+                        BorderThickness: =gblPButtonSave.BorderThickness
+                        Color: =gblPButtonSave.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        DisabledFill: =RGBA(244, 244, 244, 1)
+                        Fill: =gblPButtonSave.Fill
+                        FocusedBorderColor: =gblPButtonSave.FocusedBorderColor
+                        FocusedBorderThickness: =gblPButtonSave.FocusedBorderThickness
+                        Font: =gblPButtonSave.Font
+                        FontWeight: =gblPButtonSave.FontWeight
+                        Height: =gblPButtonSave.Height
+                        HoverBorderColor: =gblPButtonSave.HoverBorderColor
+                        HoverColor: =gblPButtonSave.HoverColor
+                        HoverFill: =gblPButtonSave.HoverFill
+                        OnSelect: |
+                            =UpdateContext({lclShowLoading: true});
+                            //Select('BtnCounter++');
+                            With(
+                                {
+                                    lclSapTicketingCounter: Last(
+                                        Sort(
+                                            Filter(
+                                                SAP_TICKETING_DB,
+                                                Created >= Today()
+                                            ),
+                                            ID,
+                                            SortOrder.Ascending
+                                        )
+                                    ).Counter
+                                },
+                                UpdateContext(
+                                    {
+                                        lclCounter: If(
+                                            !IsBlank(lclSapTicketingCounter),
+                                            lclSapTicketingCounter + 1,
+                                            1
+                                        )
+                                    }
+                                )
+                            );
+                            SubmitForm(FrmSapTicketing);
+                        PaddingTop: =0
+                        PressedBorderColor: =gblPButtonSave.PressedBorderColor
+                        PressedColor: =gblPButtonSave.PressedColor
+                        PressedFill: =gblPButtonSave.PressedFill
+                        RadiusBottomLeft: =gblPButtonSave.RadiusBottomLeft
+                        RadiusBottomRight: =gblPButtonSave.RadiusBottomRight
+                        RadiusTopLeft: =gblPButtonSave.RadiusTopLeft
+                        RadiusTopRight: =gblPButtonSave.RadiusTopRight
+                        Size: =15
+                        Text: ="Save"
+                        Visible: =If(FrmSapTicketing.Mode=FormMode.View, false,true)
+                        X: =(Parent.Width * 0.5 ) - ((BtnSave.Width + BtnCancel.Width ) * 0.5)
+                        Y: =20
+                        ZIndex: =1
+
+                    BtnCancel As button:
+                        BorderColor: =gblPButtonCancel.BorderColor
+                        BorderStyle: =gblPButtonCancel.BorderStyle
+                        BorderThickness: =gblPButtonCancel.BorderThickness
+                        Color: =gblPButtonCancel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        DisabledFill: =RGBA(244, 244, 244, 1)
+                        Fill: =gblPButtonCancel.Fill
+                        FocusedBorderColor: =gblPButtonCancel.FocusedBorderColor
+                        FocusedBorderThickness: =gblPButtonCancel.FocusedBorderThickness
+                        Font: =gblPButtonCancel.Font
+                        FontWeight: =gblPButtonCancel.FontWeight
+                        Height: =gblPButtonCancel.Height
+                        HoverBorderColor: =gblPButtonCancel.HoverBorderColor
+                        HoverColor: =gblPButtonCancel.HoverColor
+                        HoverFill: =gblPButtonCancel.HoverFill
+                        OnSelect: |-
+                            =UpdateContext({lclEditPressed: false});
+                            ResetForm(FrmSapTicketing);
+                            Navigate(
+                                ScrnSapticketingView,
+                                ScreenTransition.Fade
+                            )
+                        PaddingTop: =0
+                        PressedBorderColor: =gblPButtonCancel.PressedBorderColor
+                        PressedColor: =gblPButtonCancel.PressedColor
+                        PressedFill: =gblPButtonCancel.PressedFill
+                        RadiusBottomLeft: =gblPButtonCancel.RadiusBottomLeft
+                        RadiusBottomRight: =gblPButtonCancel.RadiusBottomRight
+                        RadiusTopLeft: =gblPButtonCancel.RadiusTopLeft
+                        RadiusTopRight: =gblPButtonCancel.RadiusTopRight
+                        Size: =15
+                        Text: ="Cancel"
+                        Visible: =If(FrmSapTicketing.Mode=FormMode.View, false,true)
+                        X: =BtnSave.X + BtnSave.Width + 20
+                        Y: =20
+                        ZIndex: =2
+
+                InitialAssignee_DataCard2 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="InitialAssignee"
+                    Default: =ThisItem.InitialAssignee
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: =DataSourceInfo([@SAP_TICKETING_DB],DataSourceInfo.DisplayName,"InitialAssignee")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "InitialAssignee")
+                    Required: =false
+                    Update: =DataCardValue7.Text
+                    Visible: =false
+                    Width: =291
+                    X: =0
+                    Y: =8
+                    ZIndex: =1
+
+                    DataCardKey6 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =34
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =30
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue7 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        Default: =Concat(DataCardValue33.SelectedItems, assign_to_name, ", ")
+                        DelayOutput: =true
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        DisabledFill: =RGBA(244, 244, 244, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        HoverBorderColor: =ColorFade(RGBA(0, 120, 212, 1), -30%)
+                        HoverColor: =RGBA(51, 51, 51, 1)
+                        HoverFill: =RGBA(255, 255, 255, 1)
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =RGBA(0, 120, 212, 1)
+                        PressedColor: =RGBA(51, 51, 51, 1)
+                        PressedFill: =RGBA(255, 255, 255, 1)
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Size: =13
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardKey6.Y + DataCardKey6.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage6 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(168, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =13
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue7.Y + DataCardValue7.Height
+                        ZIndex: =3
+
+                    StarVisible6 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey6.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey6.Y
+                        ZIndex: =4
+
+                InitialAssignee_email_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="InitialAssignee_email"
+                    Default: =ThisItem.InitialAssignee_email
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: =DataSourceInfo([@SAP_TICKETING_DB],DataSourceInfo.DisplayName,"InitialAssignee_email")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "InitialAssignee_email")
+                    Required: =false
+                    Update: =DataCardValue8.Text
+                    Visible: =false
+                    Width: =291
+                    X: =3
+                    Y: =8
+                    ZIndex: =1
+
+                    DataCardKey7 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =34
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =30
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue8 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        Default: =Concat(DataCardValue33.SelectedItems, assign_to_email, ";")
+                        DelayOutput: =true
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        DisabledFill: =RGBA(244, 244, 244, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        HoverBorderColor: =ColorFade(RGBA(0, 120, 212, 1), -30%)
+                        HoverColor: =RGBA(51, 51, 51, 1)
+                        HoverFill: =RGBA(255, 255, 255, 1)
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =RGBA(0, 120, 212, 1)
+                        PressedColor: =RGBA(51, 51, 51, 1)
+                        PressedFill: =RGBA(255, 255, 255, 1)
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Size: =13
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardKey7.Y + DataCardKey7.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage7 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(168, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =13
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue8.Y + DataCardValue8.Height
+                        ZIndex: =3
+
+                    StarVisible7 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey7.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey7.Y
+                        ZIndex: =4
+
+                AssignedTo_email_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="AssignedTo_email"
+                    Default: =ThisItem.AssignedTo_email
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: =DataSourceInfo([@SAP_TICKETING_DB],DataSourceInfo.DisplayName,"AssignedTo_email")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "AssignedTo_email")
+                    Required: =false
+                    Update: =DataCardValue9.Text
+                    Visible: =false
+                    Width: =291
+                    X: =6
+                    Y: =8
+                    ZIndex: =1
+
+                    DataCardKey8 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =34
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =30
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue9 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        Default: =Concat(DataCardValue33.SelectedItems, assign_to_email, ";")
+                        DelayOutput: =true
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        DisabledFill: =RGBA(244, 244, 244, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        HoverBorderColor: =ColorFade(RGBA(0, 120, 212, 1), -30%)
+                        HoverColor: =RGBA(51, 51, 51, 1)
+                        HoverFill: =RGBA(255, 255, 255, 1)
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =RGBA(0, 120, 212, 1)
+                        PressedColor: =RGBA(51, 51, 51, 1)
+                        PressedFill: =RGBA(255, 255, 255, 1)
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Size: =13
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardKey8.Y + DataCardKey8.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage8 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(168, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =13
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue9.Y + DataCardValue9.Height
+                        ZIndex: =3
+
+                    StarVisible8 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey8.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey8.Y
+                        ZIndex: =4
+
+                AssignedTo_DataCard3 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="AssignedTo"
+                    Default: =ThisItem.AssignedTo
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: =DataSourceInfo([@SAP_TICKETING_DB],DataSourceInfo.DisplayName,"AssignedTo")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "AssignedTo")
+                    Required: =false
+                    Update: =DataCardValue10.Text
+                    Visible: =false
+                    Width: =291
+                    X: =9
+                    Y: =8
+                    ZIndex: =1
+
+                    DataCardKey9 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =34
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =30
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue10 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        Default: =Concat(DataCardValue33.SelectedItems, assign_to_name, ", ")
+                        DelayOutput: =true
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        DisabledFill: =RGBA(244, 244, 244, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        HoverBorderColor: =ColorFade(RGBA(0, 120, 212, 1), -30%)
+                        HoverColor: =RGBA(51, 51, 51, 1)
+                        HoverFill: =RGBA(255, 255, 255, 1)
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =RGBA(0, 120, 212, 1)
+                        PressedColor: =RGBA(51, 51, 51, 1)
+                        PressedFill: =RGBA(255, 255, 255, 1)
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Size: =13
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardKey9.Y + DataCardKey9.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage9 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(168, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =13
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue10.Y + DataCardValue10.Height
+                        ZIndex: =3
+
+                    StarVisible9 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey9.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey9.Y
+                        ZIndex: =4
+
+                Requester_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="Requester"
+                    Default: =ThisItem.Requester
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: =DataSourceInfo([@SAP_TICKETING_DB],DataSourceInfo.DisplayName,"Requester")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =70
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "Requester")
+                    Required: =false
+                    Update: =DataCardValue26.Text
+                    Width: =Parent.Width * 0.5
+                    X: =0
+                    Y: =0
+                    ZIndex: =2
+
+                    DataCardKey1_23 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =1
+
+                    DataCardValue26 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        Color: =gblPInput.Color
+                        Default: =If(FrmSapTicketing.Mode = FormMode.New , Proper(gblUserO365Info.name), Parent.Default)
+                        DelayOutput: =true
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisabledFill: =ColorFade(Self.Fill,-2%)
+                        DisplayMode: |-
+                            =If(
+                                gblUserRole.is_admin || gblUserRole.is_assign,
+                                DisplayMode.Edit,
+                                DisplayMode.Disabled
+                            )//If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =gblPInput.FontWeight
+                        Height: =gblPInput.Height
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_23.Y + DataCardKey1_23.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage1_24 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue26.X
+                        Y: =DataCardValue26.Y + DataCardValue26.Height
+                        ZIndex: =3
+
+                    StarVisible1_24 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_23.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_23.Y
+                        ZIndex: =4
+
+                Phone_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="Phone"
+                    Default: =ThisItem.Phone
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: =DataSourceInfo([@SAP_TICKETING_DB],DataSourceInfo.DisplayName,"Phone")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =70
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "Phone")
+                    Required: =false
+                    Update: =DataCardValue28.Text
+                    Width: =Parent.Width * 0.5
+                    X: =0
+                    Y: =1
+                    ZIndex: =2
+
+                    DataCardKey1_25 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =1
+
+                    DataCardValue28 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        Color: =gblPInput.Color
+                        Default: |-
+                            =If(
+                                FrmSapTicketing.Mode = FormMode.New,
+                                Office365Users.UserProfileV2(gblUserO365Info.email).mobilePhone,
+                                Parent.Default
+                            )
+                        DelayOutput: =true
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisabledFill: =ColorFade(Self.Fill,-2%)
+                        DisplayMode: =DataCardValue26.DisplayMode // If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =FontWeight.Lighter
+                        Height: =gblPInput.Height
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_25.Y + DataCardKey1_25.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage1_26 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue28.X
+                        Y: =DataCardValue28.Y + DataCardValue28.Height
+                        ZIndex: =3
+
+                    StarVisible1_26 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_25.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_25.Y
+                        ZIndex: =4
+
+                Department_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="Department"
+                    Default: =ThisItem.Department
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: =DataSourceInfo([@SAP_TICKETING_DB],DataSourceInfo.DisplayName,"Department")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =70
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "Department")
+                    Required: =false
+                    Update: =DataCardValue29.Text
+                    Width: =Parent.Width * 0.5
+                    X: =0
+                    Y: =2
+                    ZIndex: =2
+
+                    DataCardKey1_26 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =1
+
+                    DataCardValue29 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        Color: =gblPInput.Color
+                        Default: |-
+                            =If(
+                                FrmSapTicketing.Mode = FormMode.New,
+                               Office365Users.UserProfileV2(gblUserO365Info.email).department,
+                                Parent.Default
+                            )
+                        DelayOutput: =true
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisabledFill: =ColorFade(Self.Fill,-2%)
+                        DisplayMode: =DataCardValue26.DisplayMode // If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =FontWeight.Lighter
+                        Height: =gblPInput.Height
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_26.Y + DataCardKey1_26.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage1_27 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue29.X
+                        Y: =DataCardValue29.Y + DataCardValue29.Height
+                        ZIndex: =3
+
+                    StarVisible1_27 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_26.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_26.Y
+                        ZIndex: =4
+
+                Issue_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="Issue"
+                    Default: =ThisItem.Issue
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="What issue are you having with SAP?"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =70
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "Issue")
+                    Required: =true
+                    Update: =DataCardValue32.Selected.Title
+                    Width: =Parent.Width * 0.5
+                    X: =0
+                    Y: =3
+                    ZIndex: =2
+
+                    DataCardValue32 As combobox:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        ChevronBackground: =gblPInput.ChevronBackground
+                        ChevronDisabledBackground: =RGBA(244, 244, 244, 0)
+                        ChevronDisabledFill: =RGBA(166, 166, 166, 0)
+                        ChevronFill: =gblPInput.ChevronFill
+                        ChevronHoverBackground: =gblPInput.ChevronHoverBackground
+                        ChevronHoverFill: =gblPInput.ChevronHoverFill
+                        Color: =gblPInput.Color
+                        DefaultSelectedItems: |-
+                            =If(
+                                FrmSapTicketing.Mode <> FormMode.New,
+                                Table({Title: ThisItem.Issue})
+                            )
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisabledFill: =Self.Fill
+                        DisplayFields: =["Title"]
+                        DisplayMode: =If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =gblPInput.Font
+                        Height: =gblPInput.Height
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        InputTextPlaceholder: =""
+                        IsSearchable: =false
+                        Items: =ShowColumns(SAP_TICKETING_Issues_dd, "Title","ID")
+                        OnChange: =Reset(DataCardValue33)
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        SearchFields: =["Title"]
+                        SearchItems: =[]
+                        SelectionFill: =RGBA(0, 120, 212, 1)
+                        SelectionTagColor: =gblPInput.SelectionTagColor
+                        SelectionTagFill: =gblPInput.SelectionTagFill
+                        SelectMultiple: =false
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_27.Y + DataCardKey1_27.Height + 5
+                        ZIndex: =1
+
+                    DataCardKey1_27 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =2
+
+                    ErrorMessage1_29 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue32.X
+                        Y: =DataCardValue32.Y + DataCardValue32.Height
+                        ZIndex: =3
+
+                    StarVisible1_29 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_27.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_27.Y
+                        ZIndex: =4
+
+                Module_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="Module"
+                    Default: =ThisItem.Module
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="What module of SAP are you having issue with? "
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =70
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "Module")
+                    Required: =true
+                    Update: =Concat(DataCardValue33.SelectedItems, Title, ",")
+                    Width: =Parent.Width * 0.5
+                    X: =6
+                    Y: =3
+                    ZIndex: =2
+
+                    DataCardValue33 As combobox:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        ChevronBackground: =gblPInput.ChevronBackground
+                        ChevronDisabledBackground: =RGBA(244, 244, 244, 0)
+                        ChevronDisabledFill: =RGBA(166, 166, 166, 0)
+                        ChevronFill: =gblPInput.ChevronFill
+                        ChevronHoverBackground: =gblPInput.ChevronHoverBackground
+                        ChevronHoverFill: =gblPInput.ChevronHoverFill
+                        Color: =gblPInput.Color
+                        DefaultSelectedItems: |-
+                            =If(
+                                FrmSapTicketing.Mode <> FormMode.New,
+                                ShowColumns(
+                                    Filter(
+                                        SAP_TICKETING_modules_dd,
+                                        Title in ThisItem.Module
+                                    ),
+                                    "Title",
+                                    "assign_to_email"
+                                )
+                            )
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisabledFill: =Self.Fill
+                        DisplayFields: =["Title"]
+                        DisplayMode: =If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =gblPInput.Font
+                        Height: =gblPInput.Height
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        InputTextPlaceholder: =""
+                        IsSearchable: =false
+                        Items: |-
+                            =ShowColumns(
+                                Filter(
+                                    SAP_TICKETING_modules_dd,
+                                    is_sap_module = true,
+                                    DataCardValue32.Selected.ID in issue
+                                ),
+                                "Title",
+                                "assign_to_email",
+                                "assign_to_name",
+                                "Category",
+                                "SubArea"
+                            )
+                        OnChange: =
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        SearchFields: =["Title"]
+                        SearchItems: =[]
+                        SelectionFill: =RGBA(0, 120, 212, 1)
+                        SelectionTagColor: =gblPInput.SelectionTagColor
+                        SelectionTagFill: =gblPInput.SelectionTagFill
+                        SelectMultiple: =false
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_28.Y + DataCardKey1_28.Height + 5
+                        ZIndex: =1
+
+                    DataCardKey1_28 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =2
+
+                    ErrorMessage1_30 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue33.X
+                        Y: =DataCardValue33.Y + DataCardValue33.Height
+                        ZIndex: =3
+
+                    StarVisible1_30 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_28.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_28.Y
+                        ZIndex: =4
+
+                Description_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="Description"
+                    Default: =ThisItem.Description
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="Short Description of the issue encountered"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =180
+                    MaxLength: =DataSourceInfo([@SAP_TICKETING_DB], DataSourceInfo.MaxLength, "Description")
+                    Required: =true
+                    Update: =DataCardValue35.Text
+                    Width: =Parent.Width
+                    X: =0
+                    Y: =5
+                    ZIndex: =2
+
+                    DataCardKey1_30 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =1
+
+                    DataCardValue35 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =gblPInput.BorderStyle
+                        BorderThickness: =gblPInput.BorderThickness
+                        Clear: =true
+                        Color: =gblPInput.Color
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisabledBorderColor: =Self.BorderColor
+                        DisabledColor: =Self.Color
+                        DisplayMode: =If(Parent.DisplayMode = DisplayMode.View, DisplayMode.Disabled, Parent.DisplayMode)
+                        Fill: =gblPInput.Fill
+                        FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+                        Font: =gblPInput.Font
+                        FontWeight: =gblPInput.FontWeight
+                        Height: =gblPInput.Height * 5
+                        HintText: ="(Please provide step-by-step procedure to replicate the error encountered)"
+                        HoverBorderColor: =gblPInput.HoverBorderColor
+                        HoverColor: =gblPInput.HoverColor
+                        HoverFill: =gblPInput.HoverFill
+                        MaxLength: =Parent.MaxLength
+                        Mode: =TextMode.MultiLine
+                        PaddingLeft: =5
+                        PressedBorderColor: =gblPInput.PressedBorderColor
+                        PressedColor: =gblPInput.PressedColor
+                        PressedFill: =gblPInput.PressedFill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Size: =gblPInput.Size
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =gblPLabel.X
+                        Y: =DataCardKey1_30.Y + DataCardKey1_30.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage1_32 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue35.X
+                        Y: =DataCardValue35.Y + DataCardValue35.Height
+                        ZIndex: =3
+
+                    StarVisible1_32 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey1_30.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey1_30.Y
+                        ZIndex: =4
+
+                Attachments_DataCard2 As typedDataCard.attachmentsEditCard:
+                    BorderColor: =RGBA(166, 166, 166, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="{Attachments}"
+                    Default: =ThisItem.Attachments
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: =DataSourceInfo([@SAP_TICKETING_DB],DataSourceInfo.DisplayName,"{Attachments}")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =170
+                    Required: =false
+                    Update: =DataCardValue37.Attachments
+                    Width: =Parent.Width
+                    X: =0
+                    Y: =6
+                    ZIndex: =2
+
+                    DataCardValue37 As attachments:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(51, 51, 51, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        DisabledFill: =RGBA(244, 244, 244, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        Height: = If(CountRows(Self.Attachments) > 0,(CountRows(Self.Attachments) * 50) + 70,  120)
+                        HoverColor: =RGBA(51, 51, 51, 1)
+                        HoverFill: =RGBA(212, 212, 212, 1)
+                        IsInDataCard: =true
+                        ItemColor: =RGBA(0, 0, 0, 1)
+                        ItemFill: =RGBA(0, 120, 212, 0)
+                        ItemHoverColor: =RGBA(51, 51, 51, 1)
+                        ItemHoverFill: =RGBA(212, 212, 212, 1)
+                        Items: =Parent.Default
+                        ItemSpacing: =12
+                        MaxAttachments: =10
+                        NoAttachmentsColor: =RGBA(166, 166, 166, 1)
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 120, 212, 1)
+                        Tooltip: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardKey24_1.Y + DataCardKey24_1.Height + 5
+                        ZIndex: =1
+
+                    ErrorMessage1_28 As label:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =gblPError.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(168, 0, 0, 1)
+                        FocusedBorderThickness: =4
+                        Font: =gblPError.Font
+                        FontWeight: =gblPError.FontWeight
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =gblPError.Size
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =DataCardValue37.X
+                        Y: =DataCardValue37.Y + DataCardValue37.Height
+                        ZIndex: =2
+
+                    DataCardKey24_1 As label:
+                        AutoHeight: =true
+                        BorderColor: =gblPLabel.BorderColor
+                        BorderStyle: =gblPLabel.BorderStyle
+                        BorderThickness: =gblPLabel.BorderThickness
+                        Color: =gblPLabel.Color
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        Fill: =gblPLabel.Fill
+                        FocusedBorderThickness: =4
+                        Font: =gblPLabel.Font
+                        FontWeight: =gblPLabel.FontWeight
+                        Height: =gblPLabel.Height
+                        PaddingLeft: =0
+                        Size: =gblPLabel.Size
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =gblPLabel.X
+                        Y: =gblPLabel.Y
+                        ZIndex: =3
+
+                    StarVisible1_28 As label:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        Color: =RGBA(255, 0, 0, 1)
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledColor: =RGBA(166, 166, 166, 1)
+                        FocusedBorderThickness: =4
+                        Font: =Font.'Segoe UI'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =DataCardKey24_1.Height
+                        PaddingLeft: =0
+                        Size: =13
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        X: =0+0
+                        Y: =DataCardKey24_1.Y
+                        ZIndex: =4
+
+            BtnEdit As button:
+                BorderColor: =gblPButtonEdit.BorderColor
+                BorderStyle: =gblPButtonEdit.BorderStyle
+                BorderThickness: =gblPButtonEdit.BorderThickness
+                Color: =gblPButtonEdit.Color
+                DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                DisabledFill: =RGBA(244, 244, 244, 1)
+                Fill: =gblPButtonEdit.Fill
+                FocusedBorderColor: =gblPButtonEdit.FocusedBorderColor
+                FocusedBorderThickness: =gblPButtonEdit.FocusedBorderThickness
+                Font: =gblPButtonEdit.Font
+                FontWeight: =gblPButtonEdit.FontWeight
+                Height: =gblPButtonEdit.Height
+                HoverBorderColor: =gblPButtonEdit.HoverBorderColor
+                HoverColor: =gblPButtonEdit.HoverColor
+                HoverFill: =gblPButtonEdit.HoverFill
+                OnSelect: |-
+                    =EditForm(FrmSapTicketing);
+                    UpdateContext({lclEditPressed: true});
+                    SetFocus(DataCardValue26)
+                PressedBorderColor: =gblPButtonEdit.PressedBorderColor
+                PressedColor: =gblPButtonEdit.PressedColor
+                PressedFill: =gblPButtonEdit.PressedFill
+                RadiusBottomLeft: =gblPButtonEdit.RadiusBottomLeft
+                RadiusBottomRight: =gblPButtonEdit.RadiusBottomRight
+                RadiusTopLeft: =gblPButtonEdit.RadiusTopLeft
+                RadiusTopRight: =gblPButtonEdit.RadiusTopRight
+                Size: =15
+                Text: ="Edit"
+                Visible: =false//If(FrmSapTicketing.Mode=FormMode.View, true,false)
+                Width: =200
+                X: =(Parent.Width * 0.5) - (Self.Width * 0.5)
+                Y: =DataCard2.Y + 10
+                ZIndex: =2
+
+            BtnSendEmail As button:
+                BorderColor: =RGBA(0, 0, 0, 0)
+                DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                DisabledFill: =RGBA(244, 244, 244, 1)
+                Fill: =RGBA(0, 120, 212, 1)
+                FocusedBorderColor: =ColorFade(Self.Fill, -75%)
+                Font: =Font.'Segoe UI'
+                FontWeight: =FontWeight.Semibold
+                Height: =36
+                HoverBorderColor: =RGBA(0, 0, 0, 0)
+                HoverColor: =RGBA(255, 255, 255, 1)
+                HoverFill: =ColorFade(RGBA(0, 120, 212, 1), -10%)
+                OnSelect: |
+                    =Set(
+                        gblGetLastSubmitDetails,
+                        LookUp(
+                            SAP_TICKETING_DB,
+                            ID = FrmSapTicketing.LastSubmit.ID
+                        )
+                    );
+                     // SEND EMAIL TO ASSIGN PERSONNEL AND CC TICKET REQUESTER AND ADMIN DEFINE IN CC_EMAIL
+                    Office365Outlook.SendEmailV2(
+                        gblGetLastSubmitDetails.AssignedTo_email,
+                        "NEW TICKET ASSIGNED - " & gblGetLastSubmitDetails.'Ticket Number',
+                        "
+                        <div style='font-family: Tahoma,Geneva,sans-serif ;'>
+                        <h3 style='text-align:center;'>SAP TICKETING - New Ticket - " & gblGetLastSubmitDetails.Module & " " & gblGetLastSubmitDetails.SubArea & "</h3>
+                        <hr>
+                        <p>
+                            Good day! 
+                            <br><br>
+                            An issue has been logged with the following details and  forwarded to you for immediate action. <br><br>
+                            <table style='table-layout: fixed;width: 100%;text-align:justify;'>
+                                <tr>
+                                    <td style=' min-width: 30%; max-width: 30%;width: 30%;'>
+                                        Ticket No.:
+                                    </td>
+                                    <td>
+                                        <a href='" & gblAppUri & "&ticket_id=" & gblGetLastSubmitDetails.ID & "'>
+                                            " & gblGetLastSubmitDetails.'Ticket Number' & "
+                                        </a> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Plant/Dept/Branch:
+                                    </td>
+                                    <td>
+                                        " & gblGetLastSubmitDetails.Department & "
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Personnel:
+                                    </td>
+                                    <td>
+                                        " & gblGetLastSubmitDetails.Requester & "
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Email/Contact No.:
+                                    </td>
+                                    <td>
+                                        " & gblGetLastSubmitDetails.'User Email' & " / " & gblGetLastSubmitDetails.Phone & "
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Date/Time Created:
+                                    </td>
+                                    <td>
+                                        " & Text(
+                            gblGetLastSubmitDetails.Created,
+                            "mm-dd-yyyy hh:mm:ss AM/PM"
+                        ) & "
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Description:
+                                    </td>
+                                    <td>
+                                       " & gblGetLastSubmitDetails.Description & "
+                                    </td>
+                                </tr>
+                            </table>
+                            <br><br>
+                            Succeeding updates shall be provided via e-mail as it
+                            becomes available. <br><br>
+                            Thank you !
+                        </p>
+                    </div>
+                            ",
+                        {
+                            Cc: Concatenate(
+                                gblUserO365Info.email,
+                                ";",
+                                Concat(
+                                    Filter(
+                                        SAP_TICKETING_email_setup,
+                                        is_send = true
+                                    ),
+                                    Title,
+                                    ";"
+                                )
+                            ),
+                            Importance: "High"
+                        }
+                    );
+                    Set(
+                        gblGetLastSubmitDetails,
+                        {}
+                    );
+                PressedBorderColor: =ColorFade(RGBA(0, 120, 212, 1), -50%)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =ColorFade(RGBA(0, 120, 212, 1), -30%)
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Size: =15
+                Text: =""
+                Visible: =false
+                Width: =82
+                X: =1
+                ZIndex: =4
+
+        DataCard1 As dataCard.blankCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =BtnResolve.Y+ BtnResolve.Height + 200
+            Width: =Parent.Width
+            X: =0
+            Y: =1
+            ZIndex: =2
+
+            HtmlActionTaken As htmlViewer:
+                AutoHeight: =true
+                Height: =0
+                HtmlText: |-
+                    =" <h3>Action Taken </h3><hr>
+                    <table style='table-layout: fixed;width: 100%; border-collapse: collapse; background-color: RGBA(255, 255, 255, 1);text-align:justify;'>
+                        <tr >
+                            <td style=' padding: 5px ; min-width: 40%; max-width: 40%;width: 40%;'> 
+                               " & With(
+                        {
+                            wActiontaken: SortByColumns(
+                                Filter(
+                                    SAP_TICKETING_Action_Taken,
+                                    hdr_id = gblSapTicketingList.ID
+                                ),
+                                "Created",
+                                SortOrder.Ascending
+                            )
+                        },
+                        Concat(
+                            wActiontaken,
+                            Concatenate(
+                                "<p>
+                            <b> Personnel: </b><span style='color:rgba(112, 1, 12,1)'>",
+                                Personnel,
+                                "</span> <b>Date " & If(
+                                    IsBlank(ResolveDateTime),
+                                    "logged",
+                                    "Resolved"
+                                ) & ":</b> <span style='color:rgba(112, 1, 12,1)'> ",
+                                Text(
+                                    Created,
+                                    "mm-dd-yyyy hh:mm:ss AM/PM"
+                                ),
+                                "</span><br>
+                            <b>Action Taken: </b> <span style='color:rgba(112, 1, 12,1)'>",
+                                ActionTaken,
+                                " </span>
+                         </p> "
+                            ),
+                            "<br>"
+                        )
+                    ) & "     
+                            </td>
+                        </tr>
+                    </table>"
+                OnSelect: =
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Visible: =If(FrmSapTicketing.Mode <> FormMode.New, true,false)
+                Width: =FrmSapTicketing.Width
+                X: =FrmSapTicketing.X
+                ZIndex: =1
+
+            BtnResolve As button:
+                BorderColor: =gblBtnOutlinePrimary.BorderColor
+                BorderStyle: =gblPButtonEdit.BorderStyle
+                BorderThickness: =gblPButtonEdit.BorderThickness
+                Color: =gblBtnOutlinePrimary.Color
+                DisabledBorderColor: =RGBA(0, 0, 0, 1)
+                DisabledColor: =RGBA(0, 0, 0, 1)
+                DisabledFill: =RGBA(244, 244, 244, 1)
+                DisplayMode: =If(gblSapTicketingList.TicketStatus = "Open",  DisplayMode.Edit, DisplayMode.Disabled)
+                Fill: =gblBtnOutlinePrimary.Fill
+                FocusedBorderColor: =gblBtnOutlinePrimary.FocusedBorderColor
+                FocusedBorderThickness: =gblPButtonEdit.FocusedBorderThickness
+                Font: =gblPButtonEdit.Font
+                FontWeight: =gblPButtonEdit.FontWeight
+                Height: =gblPButtonEdit.Height
+                HoverBorderColor: =gblBtnOutlinePrimary.HoverBorderColor
+                HoverColor: =gblBtnOutlinePrimary.HoverColor
+                HoverFill: =gblBtnOutlinePrimary.HoverFill
+                OnSelect: |-
+                    =NewForm(FrmResolve);
+                    Navigate(ScrnSapticketingResolve,ScreenTransition.Fade)
+                    
+                    /*UpdateContext(
+                        {
+                            lclShowUpdateAction: true,
+                            lclResolved: true,
+                            lclUpdateStatus: false,
+                            lclTransfer:false
+                        }
+                    );
+                    SetFocus(TxtActionTaken);
+                    Select(BtnReset);*/
+                PaddingTop: =0
+                PressedBorderColor: =gblBtnOutlinePrimary.PressedBorderColor
+                PressedColor: =gblBtnOutlinePrimary.PressedColor
+                PressedFill: =gblBtnOutlinePrimary.PressedFill
+                RadiusBottomLeft: =gblPButtonEdit.RadiusBottomLeft
+                RadiusBottomRight: =gblPButtonEdit.RadiusBottomRight
+                RadiusTopLeft: =gblPButtonEdit.RadiusTopLeft
+                RadiusTopRight: =gblPButtonEdit.RadiusTopRight
+                Size: =15
+                Text: ="Resolved"
+                Visible: =If(FrmSapTicketing.Mode <> FormMode.New && (gblUserRole.is_admin || gblUserRole.is_assign), true,false)
+                Width: =200
+                X: =BtnUpdateStatus.X+BtnUpdateStatus.Width+5
+                Y: =HtmlTranferNotes.Y+HtmlTranferNotes.Height +20
+                ZIndex: =3
+
+            BtnUpdateStatus As button:
+                BorderColor: =gblBtnOutlinePrimary.BorderColor
+                BorderStyle: =gblPButtonEdit.BorderStyle
+                BorderThickness: =gblPButtonEdit.BorderThickness
+                Color: =gblBtnOutlinePrimary.Color
+                DisabledBorderColor: =RGBA(0, 0, 0, 1)
+                DisabledColor: =RGBA(0, 0, 0, 1)
+                DisabledFill: =RGBA(244, 244, 244, 1)
+                DisplayMode: =If(gblSapTicketingList.TicketStatus = "Open",  DisplayMode.Edit, DisplayMode.Disabled)
+                Fill: =gblBtnOutlinePrimary.Fill
+                FocusedBorderColor: =gblBtnOutlinePrimary.FocusedBorderColor
+                FocusedBorderThickness: =gblPButtonEdit.FocusedBorderThickness
+                Font: =gblPButtonEdit.Font
+                FontWeight: =gblPButtonEdit.FontWeight
+                Height: =gblPButtonEdit.Height
+                HoverBorderColor: =gblBtnOutlinePrimary.HoverBorderColor
+                HoverColor: =gblBtnOutlinePrimary.HoverColor
+                HoverFill: =gblBtnOutlinePrimary.HoverFill
+                OnSelect: |-
+                    =NewForm(FrmActionTaken);
+                    Navigate(ScrnSapticketingUpdate,ScreenTransition.Fade)
+                    
+                    
+                    /*UpdateContext(
+                        {
+                            lclShowUpdateAction: true,
+                            lclResolved: false,
+                            lclUpdateStatus: true,
+                            lclTransfer:false
+                            
+                        }
+                    );
+                    SetFocus(TxtActionTaken);
+                    Select(BtnReset)*/
+                PaddingTop: =0
+                PressedBorderColor: =gblBtnOutlinePrimary.PressedBorderColor
+                PressedColor: =gblBtnOutlinePrimary.PressedColor
+                PressedFill: =gblBtnOutlinePrimary.PressedFill
+                RadiusBottomLeft: =gblPButtonEdit.RadiusBottomLeft
+                RadiusBottomRight: =gblPButtonEdit.RadiusBottomRight
+                RadiusTopLeft: =gblPButtonEdit.RadiusTopLeft
+                RadiusTopRight: =gblPButtonEdit.RadiusTopRight
+                Size: =15
+                Text: ="Update Status"
+                Visible: =If(FrmSapTicketing.Mode <> FormMode.New && (gblUserRole.is_admin || gblUserRole.is_assign), true,false)
+                Width: =200
+                X: =BtnTransfer.X+ BtnTransfer.Width + 5
+                Y: =HtmlTranferNotes.Y+HtmlTranferNotes.Height +20
+                ZIndex: =4
+
+            BtnTransfer As button:
+                BorderColor: =gblBtnOutlinePrimary.BorderColor
+                BorderStyle: =gblPButtonEdit.BorderStyle
+                BorderThickness: =gblPButtonEdit.BorderThickness
+                Color: =gblBtnOutlinePrimary.Color
+                DisabledBorderColor: =RGBA(0, 0, 0, 1)
+                DisabledColor: =RGBA(0, 0, 0, 1)
+                DisabledFill: =RGBA(244, 244, 244, 1)
+                DisplayMode: =If(gblSapTicketingList.TicketStatus = "Open",  DisplayMode.Edit, DisplayMode.Disabled)
+                Fill: =gblBtnOutlinePrimary.Fill
+                FocusedBorderColor: =gblBtnOutlinePrimary.FocusedBorderColor
+                FocusedBorderThickness: =gblPButtonEdit.FocusedBorderThickness
+                Font: =gblPButtonEdit.Font
+                FontWeight: =gblPButtonEdit.FontWeight
+                Height: =gblPButtonEdit.Height
+                HoverBorderColor: =gblBtnOutlinePrimary.HoverBorderColor
+                HoverColor: =gblBtnOutlinePrimary.HoverColor
+                HoverFill: =gblBtnOutlinePrimary.HoverFill
+                OnSelect: |-
+                    =UpdateContext(
+                        {
+                            lclShowUpdateAction: true,
+                            lclResolved: false,
+                            lclUpdateStatus: false,
+                            lclTransfer:true
+                        }
+                    );
+                    SetFocus(TxtActionTaken);
+                    Select(BtnReset)
+                PaddingTop: =0
+                PressedBorderColor: =gblBtnOutlinePrimary.PressedBorderColor
+                PressedColor: =gblBtnOutlinePrimary.PressedColor
+                PressedFill: =gblBtnOutlinePrimary.PressedFill
+                RadiusBottomLeft: =gblPButtonEdit.RadiusBottomLeft
+                RadiusBottomRight: =gblPButtonEdit.RadiusBottomRight
+                RadiusTopLeft: =gblPButtonEdit.RadiusTopLeft
+                RadiusTopRight: =gblPButtonEdit.RadiusTopRight
+                Size: =15
+                Text: ="Transfer "
+                Visible: =If(FrmSapTicketing.Mode <> FormMode.New && (gblUserRole.is_admin || gblUserRole.is_assign), true,false)
+                Width: =200
+                X: =(Parent.Width * 0.5) - ((BtnResolve.Width + BtnUpdateStatus.Width + BtnTransfer.Width+BtnClosed.Width) * 0.5)
+                Y: =HtmlTranferNotes.Y+HtmlTranferNotes.Height +20
+                ZIndex: =5
+
+            BtnClosed As button:
+                BorderColor: =gblBtnOutlinePrimary.BorderColor
+                BorderStyle: =gblPButtonEdit.BorderStyle
+                BorderThickness: =gblPButtonEdit.BorderThickness
+                Color: =gblBtnOutlinePrimary.Color
+                DisabledBorderColor: =RGBA(0, 0, 0, 1)
+                DisabledColor: =RGBA(0, 0, 0, 1)
+                DisabledFill: =RGBA(244, 244, 244, 1)
+                DisplayMode: =If(gblSapTicketingList.TicketStatus = "Resolved" && gblSapTicketingList.TicketStatus <> "Closed" ,  DisplayMode.Edit, DisplayMode.Disabled)
+                Fill: =gblBtnOutlinePrimary.Fill
+                FocusedBorderColor: =gblBtnOutlinePrimary.FocusedBorderColor
+                FocusedBorderThickness: =gblPButtonEdit.FocusedBorderThickness
+                Font: =gblPButtonEdit.Font
+                FontWeight: =gblPButtonEdit.FontWeight
+                Height: =gblPButtonEdit.Height
+                HoverBorderColor: =gblBtnOutlinePrimary.HoverBorderColor
+                HoverColor: =gblBtnOutlinePrimary.HoverColor
+                HoverFill: =gblBtnOutlinePrimary.HoverFill
+                OnSelect: |-
+                    =Patch(
+                        SAP_TICKETING_DB,
+                        gblSapTicketingList,
+                        {
+                            TicketStatus: "Closed",
+                            ClosedDateTime: Now()
+                        }
+                    );
+                    Notify(
+                        gblSapTicketingList.'Ticket Number' & " is Closed ",
+                        NotificationType.Information,
+                        2000
+                    );
+                    Navigate(
+                        ScrnSapticketingView,
+                        ScreenTransition.Fade
+                    )
+                PaddingTop: =0
+                PressedBorderColor: =gblBtnOutlinePrimary.PressedBorderColor
+                PressedColor: =gblBtnOutlinePrimary.PressedColor
+                PressedFill: =gblBtnOutlinePrimary.PressedFill
+                RadiusBottomLeft: =gblPButtonEdit.RadiusBottomLeft
+                RadiusBottomRight: =gblPButtonEdit.RadiusBottomRight
+                RadiusTopLeft: =gblPButtonEdit.RadiusTopLeft
+                RadiusTopRight: =gblPButtonEdit.RadiusTopRight
+                Size: =15
+                Text: ="Close"
+                Visible: =If(FrmSapTicketing.Mode <> FormMode.New && (gblUserRole.is_admin  || gblSapTicketingList.'Created By'.Email=gblUserO365Info.email), true,false)
+                Width: =200
+                X: =BtnResolve.X+BtnResolve.Width+5
+                Y: =HtmlTranferNotes.Y+HtmlTranferNotes.Height +20
+                ZIndex: =6
+
+            BtnReset As button:
+                BorderColor: =RGBA(0, 0, 0, 0)
+                DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                DisabledColor: =RGBA(166, 166, 166, 1)
+                DisabledFill: =RGBA(244, 244, 244, 1)
+                Fill: =RGBA(0, 120, 212, 1)
+                FocusedBorderColor: =ColorFade(Self.Fill, -75%)
+                Font: =Font.'Segoe UI'
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =RGBA(0, 0, 0, 0)
+                HoverColor: =RGBA(255, 255, 255, 1)
+                HoverFill: =ColorFade(RGBA(0, 120, 212, 1), -10%)
+                OnSelect: |-
+                    =Concurrent(
+                        Reset(CmbxAssignedto),
+                        Reset(TxtConcernDept),
+                        Reset(TxtAssignTo),
+                        Reset(CmbxSubCategory),
+                        Reset(TxtActionTaken),
+                        Reset(CmbxCategory),
+                        Reset(TxtAssignTo_name)
+                    )
+                PressedBorderColor: =ColorFade(RGBA(0, 120, 212, 1), -50%)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =ColorFade(RGBA(0, 120, 212, 1), -30%)
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Size: =15
+                Text: ="Button"
+                Visible: =false
+                Y: =260
+                ZIndex: =7
+
+            HtmlTranferNotes As htmlViewer:
+                AutoHeight: =true
+                Height: =0
+                HtmlText: |-
+                    =" <h3>Transfer Notes </h3><hr>
+                    <table style='table-layout: fixed;width: 100%; border-collapse: collapse; background-color: RGBA(255, 255, 255, 1);text-align:justify;'>
+                        <tr >
+                            <td style=' padding: 5px ; min-width: 40%; max-width: 40%;width: 40%;'> 
+                               " & With(
+                        {
+                            wTranferNotes: SortByColumns(
+                                Filter(
+                                    SAP_TICKETING_transfer_ticket,
+                                    hdr_id = gblSapTicketingList.ID
+                                ),
+                                "Created",
+                                SortOrder.Ascending
+                            )
+                        },
+                        Concat(
+                            wTranferNotes,
+                            Concatenate(
+                                "<p>
+                            <b> Personnel: </b><span style='color:rgba(112, 1, 12,1)'>",
+                                'Created By'.DisplayName,
+                                "</span> <b>Date Transfer :</b> <span style='color:rgba(112, 1, 12,1)'> ",
+                                Text(
+                                    Created,
+                                    "mm-dd-yyyy hh:mm:ss AM/PM"
+                                ),
+                                "</span><br>
+                            <b>Transfer Notes: </b> <span style='color:rgba(112, 1, 12,1)'>",
+                                Notes,
+                                " </span>
+                         </p>"
+                            ),
+                            "<br>"
+                        )
+                    ) & "     
+                            </td>
+                        </tr>
+                    </table>"
+                OnSelect: =
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Visible: =If(FrmSapTicketing.Mode <> FormMode.New, true,false)
+                Width: =FrmSapTicketing.Width
+                X: =HtmlActionTaken.X
+                Y: =HtmlActionTaken.Y+HtmlActionTaken.Height + 10
+                ZIndex: =8
+
+    CmpntHeader_3 As CmpntHeader:
+        HeaderText: |-
+            =/*Switch(FrmSapTicketing.Mode,FormMode.New,"SAP TICKETING - New Form",FormMode.View,"SAP TICKETING - View Form",FormMode.Edit,"SAP TICKETING - Edit Form")&" "&
+            */
+            "SAP TICKETING  " & gblSapTicketingList.'Ticket Number'
+        HomeNavigation: =ScrnSapticketingView
+        Width: =Parent.Width
+        ZIndex: =2
+
+    ChkbxForBUAction As checkbox:
+        BorderColor: =RGBA(0, 0, 0, 0)
+        BorderStyle: =BorderStyle.None
+        BorderThickness: =2
+        CheckboxBorderColor: =RGBA(102, 102, 102, 1)
+        CheckboxSize: |
+            =30
+        CheckmarkFill: =RGBA(0, 120, 212, 1)
+        Color: =RGBA(51, 51, 51, 1)
+        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+        DisabledColor: =RGBA(166, 166, 166, 1)
+        FocusedBorderThickness: =4
+        Font: =Font.'Segoe UI'
+        Height: =36
+        HoverBorderColor: =RGBA(0, 0, 0, 0)
+        HoverColor: =RGBA(51, 51, 51, 1)
+        HoverFill: =RGBA(0, 0, 0, 0)
+        OnCheck: |-
+            =UpdateContext({lclForBuAction: true})
+        OnUncheck: |-
+            =UpdateContext({lclForBuAction: false})
+        PressedBorderColor: =RGBA(0, 0, 0, 0)
+        PressedColor: =RGBA(51, 51, 51, 1)
+        PressedFill: =RGBA(0, 0, 0, 0)
+        Size: =13
+        Text: ="For BU Action "
+        Visible: =TxtAssignTo.Visible && lclUpdateStatus
+        Width: =200
+        X: =(LblActionTaken.X + LblActionTaken.Width) * 0.35
+        Y: =LblActionTaken.Y
+        ZIndex: =58
+
+    CmpntLoading_1 As CmpntLoading:
+        Visible: =lclShowLoading
+        ZIndex: =59
+
+    GrpActionTaken As group:
+        Height: =5
+        Width: =5
+        X: =30
+        Y: =5
+        ZIndex: =60
+
+        Rectangle1 As rectangle:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            BorderStyle: =BorderStyle.None
+            BorderThickness: =2
+            Fill: =RGBA(230, 230, 230, 0.2)
+            FocusedBorderThickness: =4
+            Height: =Parent.Height
+            OnSelect: |-
+                =UpdateContext(
+                    {
+                        lclShowUpdateAction: false,
+                        lclResolved: false,
+                        lclUpdateStatus: false
+                    }
+                )
+            Visible: =lclShowUpdateAction
+            Width: =Parent.Width
+            ZIndex: =42
+
+        HtmlActionTakenBG As htmlViewer:
+            AutoHeight: =true
+            Height: =Parent.Height * 0.8
+            HtmlText: |-
+                ="<div style='margin-left:10px;width:" & Parent.Width * 0.68 & "px;height:" & Parent.Height * 0.8 & "px;background-color:#fefefe;box-shadow:0 5px 6px 5px  #ccc; border-radius:10px';'></div>"
+            OnSelect: =
+            Visible: =lclShowUpdateAction
+            Width: =Parent.Width * 0.7
+            X: =187
+            Y: =(Parent.Height * 0.5) - (Self.Height * 0.5)
+            ZIndex: =43
+
+        LblActionTaken As label:
+            BorderColor: =gblPLabel.BorderColor
+            BorderStyle: =gblPLabel.BorderStyle
+            BorderThickness: =gblPLabel.BorderThickness
+            Color: =gblPLabel.Color
+            DisabledBorderColor: =RGBA(0, 0, 0, 0)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            Fill: =gblPLabel.Fill
+            FocusedBorderThickness: =4
+            Font: =gblPLabel.Font
+            FontWeight: =gblPLabel.FontWeight
+            Height: =gblPLabel.Height
+            OnSelect: =lclShowUpdateAction
+            PaddingLeft: =0
+            Size: =gblPLabel.Size
+            Text: |-
+                =If(!lclTransfer, "Action Taken: ", "Notes: ")
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.92
+            Wrap: =false
+            X: =HtmlActionTakenBG.X + 50
+            Y: =CmbxCategory.Y + CmbxCategory.Height + 30
+            ZIndex: =44
+
+        TxtActionTaken As text:
+            BorderColor: =gblPCard.BorderColor
+            BorderStyle: =gblPInput.BorderStyle
+            BorderThickness: =gblPInput.BorderThickness
+            Clear: =true
+            Color: =gblPInput.Color
+            Default: =
+            DelayOutput: =true
+            DisabledBorderColor: =Self.BorderColor
+            DisabledColor: =Self.Color
+            DisplayMode: = DisplayMode.Edit
+            EnableSpellCheck: =true
+            Fill: =gblPInput.Fill
+            FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+            Font: =gblPInput.Font
+            FontWeight: =gblPInput.FontWeight
+            Height: =120
+            HoverBorderColor: =gblPInput.HoverBorderColor
+            HoverColor: =gblPInput.HoverColor
+            HoverFill: =gblPInput.HoverFill
+            MaxLength: =3000
+            Mode: =TextMode.MultiLine
+            OnSelect: =lclShowUpdateAction
+            PaddingLeft: =5
+            PressedBorderColor: =gblPInput.PressedBorderColor
+            PressedColor: =gblPInput.PressedColor
+            PressedFill: =gblPInput.PressedFill
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Size: =gblPInput.Size
+            Tooltip: =
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.92
+            X: =HtmlActionTakenBG.X + 50
+            Y: =LblActionTaken.Y + LblActionTaken.Height + 10
+            ZIndex: =45
+
+        LblActionTakenHdr As label:
+            BorderColor: =gblPLabel.BorderColor
+            BorderStyle: =gblPLabel.BorderStyle
+            BorderThickness: =gblPLabel.BorderThickness
+            Color: =gblPLabel.Color
+            DisabledBorderColor: =RGBA(0, 0, 0, 0)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            Fill: =gblPLabel.Fill
+            FocusedBorderThickness: =4
+            Font: =gblPLabel.Font
+            FontWeight: =gblPLabel.FontWeight
+            Height: =gblPLabel.Height
+            OnSelect: =lclShowUpdateAction
+            PaddingLeft: =0
+            Size: =gblPLabel.Size + 5
+            Text: |-
+                =If(
+                    lclResolved,
+                    "Resolved Notes - ",
+                    lclUpdateStatus,
+                    "Update Status - ",
+                    lclTransfer,
+                    "Transfer Ticket - "
+                ) & gblSapTicketingList.'Ticket Number'
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.86
+            Wrap: =false
+            X: =HtmlActionTakenBG.X + 50
+            Y: =HtmlActionTakenBG.Y+ 30
+            ZIndex: =46
+
+        BtnActionTaken As button:
+            BorderColor: =gblPButtonEdit.BorderColor
+            BorderStyle: =gblPButtonEdit.BorderStyle
+            BorderThickness: =gblPButtonEdit.BorderThickness
+            Color: =gblPButtonEdit.Color
+            DisabledBorderColor: =RGBA(50, 50, 50, 1)
+            DisabledColor: =RGBA(50, 50, 50, 1)
+            DisabledFill: =RGBA(244, 244, 244, 1)
+            DisplayMode: |-
+                =If(
+                    IsBlank(TxtActionTaken.Text) || IsBlank(CmbxCategory.Selected.Result) || IsBlank(CmbxSubCategory.Selected.Title) || IsBlank(TxtAssignTo_name.Text) || IsBlank(TxtConcernDept.Text) ,
+                    DisplayMode.Disabled,
+                    DisplayMode.Edit
+                )
+            Fill: =gblPButtonEdit.Fill
+            FocusedBorderColor: =gblPButtonEdit.FocusedBorderColor
+            FocusedBorderThickness: =gblPButtonEdit.FocusedBorderThickness
+            Font: =gblPButtonEdit.Font
+            FontWeight: =FontWeight.Bold
+            Height: =gblPButtonEdit.Height
+            HoverBorderColor: =gblPButtonEdit.HoverBorderColor
+            HoverColor: =gblPButtonEdit.HoverColor
+            HoverFill: =gblPButtonEdit.HoverFill
+            OnSelect: |-
+                =If(
+                    lclResolved,
+                //IF TICKET IS RESOLVED
+                //UPDATE DB 
+                    Patch(
+                        SAP_TICKETING_DB,
+                        gblSapTicketingList,
+                        {
+                            ResolveDateTime: Now(),
+                            TicketStatus: "Resolved",
+                            Category: CmbxCategory.Selected.Result,
+                            SubCategory: CmbxSubCategory.Selected.Title,
+                            AssignedTo: TxtAssignTo_name.Text,
+                            AssignedTo_email: TxtAssignTo.Text,
+                            ConcernDepartment: TxtConcernDept.Text
+                        }
+                    );
+                    
+                //ADD NEW ITEM TO ACTION TAKEN
+                Patch(
+                        SAP_TICKETING_Action_Taken,
+                        Defaults(SAP_TICKETING_Action_Taken),
+                        {
+                            hdr_id: gblSapTicketingList.ID,
+                            TicketNumber: gblSapTicketingList.'Ticket Number',
+                            ResolveDateTime: Now(),
+                            Personnel: Proper(gblUserO365Info.name),
+                            PersonnelEmail: gblUserO365Info.email,
+                            ActionTaken: TxtActionTaken.Text
+                        }
+                    );
+                    
+                // SEND EMAIL TO REQUESTER AND CC PERSONNEL AND ADMIN CC_EMAIL
+                Office365Outlook.SendEmailV2(
+                        gblSapTicketingList.'User Email',
+                        "RESOLVED TICKET - " & gblSapTicketingList.'Ticket Number',
+                        "
+                    <div style='font-family: Tahoma,Geneva,sans-serif ;'>
+                    <h3 style='text-align:center;'>SAP TICKETING - Status: Resolved - " & gblSapTicketingList.Module & " " & gblSapTicketingList.SubArea & "</h3>
+                    <hr>
+                    <p>
+                        Hi " & Proper(gblSapTicketingList.'Created By'.DisplayName) & ", 
+                        <br><br>
+                        <b>" & gblSapTicketingList.'Ticket Number' & " </b> has been resolved. Please confirm if issue can already be closed, and update the SAP Portal Ticket accordingly. <br><br>
+                        <table style='table-layout: fixed;width: 100%;text-align:justify;'>
+                            <tr>
+                                <td style=' min-width: 30%; max-width: 30%;width: 30%;'>
+                                    Ticket No.:
+                                </td>
+                                <td>
+                                    <a href='" & gblAppUri & "&ticket_id=" & gblSapTicketingList.ID & "'>
+                                        " & gblSapTicketingList.'Ticket Number' & "
+                                    </a> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Plant/Dept/Branch:
+                                </td>
+                                <td>
+                                    " & gblSapTicketingList.Department & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Personnel:
+                                </td>
+                                <td>
+                                    " & gblSapTicketingList.Requester & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Email/Contact No.:
+                                </td>
+                                <td>
+                                    " & gblSapTicketingList.'User Email' & " / " & gblSapTicketingList.Phone & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Date/Time Created:
+                                </td>
+                                <td>
+                                    " & Text(
+                            gblSapTicketingList.Created,
+                            "mm-dd-yyyy hh:mm:ss AM/PM"
+                        ) & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Description:
+                                </td>
+                                <td>
+                                   " & gblSapTicketingList.Description & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=2>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Assigned Department:
+                                </td>
+                                <td>
+                                   " & TxtConcernDept.Text & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Date/Time Resolved:
+                                </td>
+                                <td>
+                                    " & Text(
+                            Now(),
+                            "mm-dd-yyyy hh:mm:ss AM/PM"
+                        ) & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Action Taken:
+                                </td>
+                                <td>
+                                   " & TxtActionTaken.Text & "
+                                </td>
+                            </tr>
+                        </table>
+                        <br><br>
+                        If you need assistance with anything else, please respond to this email. <br><br>
+                        Thank you !
+                    </p>
+                </div>",
+                        {
+                            Cc: Concatenate(
+                                gblUserO365Info.email,
+                                ";",
+                                Concat(
+                                    Filter(
+                                        SAP_TICKETING_email_setup,
+                                        is_send = true
+                                    ),
+                                    Title,
+                                    ";"
+                                )
+                            ),
+                            Importance: "High"
+                        }
+                    ),
+                // ELSEIF UPDATE STATUS
+                    lclUpdateStatus,
+                    //UPDATE DB 
+                    Patch(
+                        SAP_TICKETING_DB,
+                        gblSapTicketingList,
+                        {
+                            Category: CmbxCategory.Selected.Result,
+                            SubCategory: CmbxSubCategory.Selected.Title,
+                            AssignedTo: TxtAssignTo_name.Text,
+                            AssignedTo_email: TxtAssignTo.Text,
+                            ConcernDepartment: TxtConcernDept.Text
+                        }
+                    );
+                    
+                //ADD NEW ITEM TO ACTION TAKEN
+                If(
+                        lclForBuAction,
+                        Patch(
+                            SAP_TICKETING_DB,
+                            gblSapTicketingList,
+                            {TicketStatus: "For BU Action"}
+                        )
+                    );
+                    Patch(
+                        SAP_TICKETING_Action_Taken,
+                        Defaults(SAP_TICKETING_Action_Taken),
+                        {
+                            hdr_id: gblSapTicketingList.ID,
+                            TicketNumber: gblSapTicketingList.'Ticket Number',
+                            Personnel: Proper(gblUserO365Info.name),
+                            PersonnelEmail: gblUserO365Info.email,
+                            ActionTaken: TxtActionTaken.Text
+                        }
+                    );
+                    
+                // SEND EMAIL TO REQUESTER FOR STATUS UPDATE
+                Office365Outlook.SendEmailV2(
+                        gblSapTicketingList.'User Email',
+                        "STATUS UPDATE TICKET - " & gblSapTicketingList.'Ticket Number',
+                        "
+                    <div style='font-family: Tahoma,Geneva,sans-serif ;'>
+                    <h3 style='text-align:center;'>SAP TICKETING - Status: Update - " & gblSapTicketingList.Module & " " & gblSapTicketingList.SubArea & "</h3>
+                    <hr>
+                    <p>
+                        Hi " & Proper(gblSapTicketingList.'Created By'.DisplayName) & ", 
+                        <br><br>
+                        Your issue <b>" & gblSapTicketingList.'Ticket Number' & " </b> is currently being worked on by our support team. <br><br>
+                        <table style='table-layout: fixed;width: 100%;text-align:justify;'>
+                            <tr>
+                                <td style=' min-width: 30%; max-width: 30%;width: 30%;'>
+                                    Ticket No.:
+                                </td>
+                                <td>
+                                    <a href='" & gblAppUri & "&ticket_id=" & gblSapTicketingList.ID & "'>
+                                        " & gblSapTicketingList.'Ticket Number' & "
+                                    </a> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Plant/Dept/Branch:
+                                </td>
+                                <td>
+                                    " & gblSapTicketingList.Department & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Personnel:
+                                </td>
+                                <td>
+                                    " & gblSapTicketingList.Requester & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Email/Contact No.:
+                                </td>
+                                <td>
+                                    " & gblSapTicketingList.'User Email' & " / " & gblSapTicketingList.Phone & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Date/Time Created:
+                                </td>
+                                <td>
+                                    " & Text(
+                            gblSapTicketingList.Created,
+                            "mm-dd-yyyy hh:mm:ss AM/PM"
+                        ) & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Description:
+                                </td>
+                                <td>
+                                   " & gblSapTicketingList.Description & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=2>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Assigned Department:
+                                </td>
+                                <td>
+                                   " & TxtConcernDept.Text & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Date/Time logged:
+                                </td>
+                                <td>
+                                    " & Text(
+                            Now(),
+                            "mm-dd-yyyy hh:mm:ss AM/PM"
+                        ) & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Action Taken:
+                                </td>
+                                <td>
+                                   " & TxtActionTaken.Text & "
+                                </td>
+                            </tr>
+                        </table>
+                        <br><br>
+                        Thank you for your patience. <br><br>
+                    </p>
+                </div>
+                        ",
+                        {
+                            Cc: Concatenate(
+                                gblUserO365Info.email,
+                                ";",
+                                Concat(
+                                    Filter(
+                                        SAP_TICKETING_email_setup,
+                                        is_send = true
+                                    ),
+                                    Title,
+                                    ";"
+                                )
+                            ),
+                            Importance: "High"
+                        }
+                    ),
+                    lclTransfer,
+                    // ELSEIF TRANSFER
+                    Patch(
+                        SAP_TICKETING_DB,
+                        gblSapTicketingList,
+                        {
+                            Category: CmbxCategory.Selected.Result,
+                            SubCategory: CmbxSubCategory.Selected.Title,
+                            AssignedTo: TxtAssignTo_name.Text,
+                            AssignedTo_email: TxtAssignTo_transfer.Text,
+                            ConcernDepartment: TxtConcernDept.Text
+                        }
+                    );
+                    //ADD NEW TRANSFER
+                Patch(
+                        SAP_TICKETING_transfer_ticket,
+                        Defaults(SAP_TICKETING_transfer_ticket),
+                        {
+                            hdr_id: gblSapTicketingList.ID,
+                            TicketNumber: gblSapTicketingList.'Ticket Number',
+                            from: gblSapTicketingList.AssignedTo_email,
+                            to: TxtAssignTo_transfer.Text,
+                            Notes: TxtActionTaken.Text
+                        }
+                    );
+                    // SEND EMAIL TO TRANSFER
+                Office365Outlook.SendEmailV2(
+                        TxtAssignTo_transfer.Text,
+                        "TRANSFER TICKET - " & gblSapTicketingList.'Ticket Number',
+                        "
+                    <div style='font-family: Tahoma,Geneva,sans-serif ;'>
+                    <h3 style='text-align:center;'>SAP TICKETING - Status: Transfer - " & gblSapTicketingList.Module & " " & gblSapTicketingList.SubArea & "</h3>
+                    <hr>
+                    <p>
+                        Hi " & TxtConcernDept.Text & " Team, 
+                        <br><br>
+                        The ticket no. <b>" & gblSapTicketingList.'Ticket Number' & " </b> has been transfer to you.<br><br>
+                        <table style='table-layout: fixed;width: 100%;text-align:justify;'>
+                            <tr>
+                                <td style=' min-width: 30%; max-width: 30%;width: 30%;'>
+                                    Ticket No.:
+                                </td>
+                                <td>
+                                    <a href='" & gblAppUri & "&ticket_id=" & gblSapTicketingList.ID & "'>
+                                        " & gblSapTicketingList.'Ticket Number' & "
+                                    </a> 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Plant/Dept/Branch:
+                                </td>
+                                <td>
+                                    " & gblSapTicketingList.Department & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Personnel:
+                                </td>
+                                <td>
+                                    " & gblSapTicketingList.Requester & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Email/Contact No.:
+                                </td>
+                                <td>
+                                    " & gblSapTicketingList.'User Email' & " / " & gblSapTicketingList.Phone & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Date/Time Created:
+                                </td>
+                                <td>
+                                    " & Text(
+                            gblSapTicketingList.Created,
+                            "mm-dd-yyyy hh:mm:ss AM/PM"
+                        ) & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Description:
+                                </td>
+                                <td>
+                                   " & gblSapTicketingList.Description & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=2>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Assigned Department:
+                                </td>
+                                <td>
+                                   " & TxtConcernDept.Text & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Date/Time transfer:
+                                </td>
+                                <td>
+                                    " & Text(
+                            Now(),
+                            "mm-dd-yyyy hh:mm:ss AM/PM"
+                        ) & "
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Transfer Note:
+                                </td>
+                                <td>
+                                   " & TxtActionTaken.Text & "
+                                </td>
+                            </tr>
+                        </table>
+                        <br><br>
+                        Thank you ! <br><br>
+                    </p>
+                </div>
+                        ",
+                        {
+                            Cc: Concatenate(
+                                gblUserO365Info.email,
+                                ";",
+                                gblSapTicketingList.'User Email',
+                                ";",
+                                Concat(
+                                    Filter(
+                                        SAP_TICKETING_email_setup,
+                                        is_send = true
+                                    ),
+                                    Title,
+                                    ";"
+                                )
+                            ),
+                            Importance: "High"
+                        }
+                    )
+                );
+                Concurrent(
+                    UpdateContext(
+                        {
+                            lclShowUpdateAction: false,
+                            lclResolved: false,
+                            lclUpdateStatus: false,
+                            lclTransfer: false
+                        }
+                    ),
+                    Reset(TxtActionTaken),
+                    Reset(CmbxCategory),
+                    Reset(CmbxSubCategory),
+                    Reset(TxtAssignTo),
+                    Reset(TxtAssignTo_name),
+                    Reset(TxtConcernDept),
+                    Reset(CmbxAssignedto)
+                );
+                Notify(
+                    "Ticket " & gblSapTicketingList.'Ticket Number' & " updated sucessfully.",
+                    NotificationType.Success,
+                    3000
+                );
+                Navigate(
+                    ScrnSapticketingView,
+                    ScreenTransition.Fade
+                )
+            PressedBorderColor: =gblPButtonEdit.PressedBorderColor
+            PressedColor: =gblPButtonEdit.PressedColor
+            PressedFill: =gblPButtonEdit.PressedFill
+            RadiusBottomLeft: =gblPButtonEdit.RadiusBottomLeft
+            RadiusBottomRight: =gblPButtonEdit.RadiusBottomRight
+            RadiusTopLeft: =gblPButtonEdit.RadiusTopLeft
+            RadiusTopRight: =gblPButtonEdit.RadiusTopRight
+            Size: =15
+            Text: =If(lclResolved, "Resolved", lclUpdateStatus, "Update Status", lclTransfer, "Transfer")
+            Visible: =lclShowUpdateAction
+            Width: =200
+            X: =TxtActionTaken.X + ((TxtActionTaken.Width *0.5 )- (Self.Width *0.5))
+            Y: =TxtActionTaken.Y + TxtActionTaken.Height + 10
+            ZIndex: =47
+
+        CmbxCategory As combobox:
+            BorderColor: =gblPCard.BorderColor
+            BorderStyle: =gblPInput.BorderStyle
+            BorderThickness: =gblPInput.BorderThickness
+            ChevronBackground: =gblPInput.ChevronBackground
+            ChevronDisabledBackground: =RGBA(244, 244, 244, 0)
+            ChevronDisabledFill: =RGBA(166, 166, 166, 0)
+            ChevronFill: =gblPInput.ChevronFill
+            ChevronHoverBackground: =gblPInput.ChevronHoverBackground
+            ChevronHoverFill: =gblPInput.ChevronHoverFill
+            Color: =gblPInput.Color
+            DefaultSelectedItems: |-
+                =Table({Result: gblSapTicketingList.Category})
+            DisabledBorderColor: =Self.BorderColor
+            DisabledColor: =Self.Color
+            DisabledFill: =Self.Fill
+            DisplayFields: =["Result"]
+            Fill: =gblPInput.Fill
+            FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+            Font: =gblPInput.Font
+            Height: =gblPInput.Height
+            HoverBorderColor: =gblPInput.HoverBorderColor
+            HoverColor: =gblPInput.HoverColor
+            HoverFill: =gblPInput.HoverFill
+            InputTextPlaceholder: =""
+            IsSearchable: =false
+            Items: |-
+                =ForAll(Distinct(SAP_TICKETING_modules_dd, Category), {Result: ThisRecord.Value}).Result
+            OnChange: =Reset(CmbxSubCategory)
+            PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+            PressedBorderColor: =gblPInput.PressedBorderColor
+            PressedColor: =gblPInput.PressedColor
+            PressedFill: =gblPInput.PressedFill
+            SearchFields: =["Result"]
+            SearchItems: =[]
+            SelectionFill: =RGBA(0, 120, 212, 1)
+            SelectionTagColor: =gblPInput.SelectionTagColor
+            SelectionTagFill: =gblPInput.SelectionTagFill
+            SelectMultiple: =false
+            Size: =gblPInput.Size
+            Tooltip: =
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.3
+            X: =HtmlActionTakenBG.X + 50
+            Y: =DataCardKey1_34.Y+DataCardKey1_34.Height + 10
+            ZIndex: =48
+
+        DataCardKey1_34 As label:
+            AutoHeight: =true
+            BorderColor: =gblPLabel.BorderColor
+            BorderStyle: =gblPLabel.BorderStyle
+            BorderThickness: =gblPLabel.BorderThickness
+            Color: =gblPLabel.Color
+            DisabledBorderColor: =RGBA(0, 0, 0, 0)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            Fill: =gblPLabel.Fill
+            FocusedBorderThickness: =4
+            Font: =gblPLabel.Font
+            FontWeight: =gblPLabel.FontWeight
+            Height: =gblPLabel.Height
+            PaddingLeft: =0
+            Size: =gblPLabel.Size
+            Text: ="Category"
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.3
+            Wrap: =false
+            X: =HtmlActionTakenBG.X + 50
+            Y: =LblActionTakenHdr.Y+LblActionTakenHdr.Height
+            ZIndex: =49
+
+        CmbxSubCategory As combobox:
+            BorderColor: =gblPCard.BorderColor
+            BorderStyle: =gblPInput.BorderStyle
+            BorderThickness: =gblPInput.BorderThickness
+            ChevronBackground: =gblPInput.ChevronBackground
+            ChevronDisabledBackground: =RGBA(244, 244, 244, 0)
+            ChevronDisabledFill: =RGBA(166, 166, 166, 0)
+            ChevronFill: =gblPInput.ChevronFill
+            ChevronHoverBackground: =gblPInput.ChevronHoverBackground
+            ChevronHoverFill: =gblPInput.ChevronHoverFill
+            Color: =gblPInput.Color
+            DefaultSelectedItems: |-
+                =Table({Title: gblSapTicketingList.SubCategory})
+            DisabledBorderColor: =Self.BorderColor
+            DisabledColor: =Self.Color
+            DisabledFill: =Self.Fill
+            DisplayFields: =["Title"]
+            Fill: =gblPInput.Fill
+            FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+            Font: =gblPInput.Font
+            Height: =gblPInput.Height
+            HoverBorderColor: =gblPInput.HoverBorderColor
+            HoverColor: =gblPInput.HoverColor
+            HoverFill: =gblPInput.HoverFill
+            InputTextPlaceholder: =""
+            IsSearchable: =false
+            Items: =Filter(SAP_TICKETING_modules_dd, Category = CmbxCategory.Selected.Result)
+            PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+            PressedBorderColor: =gblPInput.PressedBorderColor
+            PressedColor: =gblPInput.PressedColor
+            PressedFill: =gblPInput.PressedFill
+            SearchFields: =["Title"]
+            SearchItems: =[]
+            SelectionFill: =RGBA(0, 120, 212, 1)
+            SelectionTagColor: =gblPInput.SelectionTagColor
+            SelectionTagFill: =gblPInput.SelectionTagFill
+            SelectMultiple: =false
+            Size: =gblPInput.Size
+            Tooltip: =
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.3
+            X: =DataCardKey1_34.X + DataCardKey1_34.Width + 10
+            Y: =DataCardKey1_35.Y+DataCardKey1_35.Height+10
+            ZIndex: =50
+
+        DataCardKey1_35 As label:
+            AutoHeight: =true
+            BorderColor: =gblPLabel.BorderColor
+            BorderStyle: =gblPLabel.BorderStyle
+            BorderThickness: =gblPLabel.BorderThickness
+            Color: =gblPLabel.Color
+            DisabledBorderColor: =RGBA(0, 0, 0, 0)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            Fill: =gblPLabel.Fill
+            FocusedBorderThickness: =4
+            Font: =gblPLabel.Font
+            FontWeight: =gblPLabel.FontWeight
+            Height: =gblPLabel.Height
+            PaddingLeft: =0
+            Size: =gblPLabel.Size
+            Text: ="Sub Category"
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.3
+            Wrap: =false
+            X: =DataCardKey1_34.X + DataCardKey1_34.Width + 10
+            Y: =DataCardKey1_34.Y
+            ZIndex: =51
+
+        DataCardKey1_36 As label:
+            AutoHeight: =true
+            BorderColor: =gblPLabel.BorderColor
+            BorderStyle: =gblPLabel.BorderStyle
+            BorderThickness: =gblPLabel.BorderThickness
+            Color: =gblPLabel.Color
+            DisabledBorderColor: =RGBA(0, 0, 0, 0)
+            DisabledColor: =RGBA(166, 166, 166, 1)
+            Fill: =gblPLabel.Fill
+            FocusedBorderThickness: =4
+            Font: =gblPLabel.Font
+            FontWeight: =gblPLabel.FontWeight
+            Height: =gblPLabel.Height
+            PaddingLeft: =0
+            Size: =gblPLabel.Size
+            Text: ="Assign to"
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.3
+            Wrap: =false
+            X: =DataCardKey1_35.X + DataCardKey1_35.Width + 10
+            Y: =DataCardKey1_34.Y
+            ZIndex: =52
+
+        TxtAssignTo As text:
+            BorderColor: =gblPCard.BorderColor
+            BorderStyle: =gblPInput.BorderStyle
+            BorderThickness: =gblPInput.BorderThickness
+            Color: =gblPInput.Color
+            Default: =If(!lclTransfer,LookUp(SAP_TICKETING_modules_dd, Title = CmbxSubCategory.Selected.Title).assign_to_email)
+            DelayOutput: =true
+            DisabledBorderColor: =Self.BorderColor
+            DisabledColor: =Self.Color
+            DisplayMode: = DisplayMode.Edit
+            EnableSpellCheck: =true
+            Fill: =gblPInput.Fill
+            FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+            Font: =gblPInput.Font
+            FontWeight: =gblPInput.FontWeight
+            Height: =gblPInput.Height +1
+            HoverBorderColor: =gblPInput.HoverBorderColor
+            HoverColor: =gblPInput.HoverColor
+            HoverFill: =gblPInput.HoverFill
+            MaxLength: =1000
+            OnSelect: =lclShowUpdateAction
+            PaddingLeft: =5
+            PressedBorderColor: =gblPInput.PressedBorderColor
+            PressedColor: =gblPInput.PressedColor
+            PressedFill: =gblPInput.PressedFill
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Size: =gblPInput.Size
+            Tooltip: =
+            Visible: =lclShowUpdateAction && !lclTransfer
+            Width: =HtmlActionTakenBG.Width * 0.3
+            X: =DataCardKey1_35.X + DataCardKey1_35.Width + 10
+            Y: =DataCardKey1_36.Y+DataCardKey1_36.Height +10
+            ZIndex: =53
+
+        TxtAssignTo_name As text:
+            BorderColor: =gblPCard.BorderColor
+            BorderStyle: =gblPInput.BorderStyle
+            BorderThickness: =gblPInput.BorderThickness
+            Clear: =true
+            Color: =gblPInput.Color
+            Default: |-
+                =If(
+                    lclTransfer,
+                    Concat(
+                        Filter(
+                            SAP_TICKETING_email_setup,
+                            ID in ForAll(Split(
+                                CmbxAssignedto.Selected.email_setup_id,
+                                ","
+                            ), {Result: ThisRecord.Value})
+                        ),
+                        Name,
+                        ","
+                    ),
+                    LookUp(
+                        SAP_TICKETING_email_setup,
+                        Title in  TxtAssignTo.Text
+                    ).Name
+                )
+            DelayOutput: =true
+            DisabledBorderColor: =Self.BorderColor
+            DisabledColor: =Self.Color
+            DisplayMode: = DisplayMode.View
+            EnableSpellCheck: =true
+            Fill: =gblPInput.Fill
+            FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+            Font: =gblPInput.Font
+            FontWeight: =FontWeight.Lighter
+            Height: =gblPInput.Height +1
+            HoverBorderColor: =gblPInput.HoverBorderColor
+            HoverColor: =gblPInput.HoverColor
+            HoverFill: =gblPInput.HoverFill
+            MaxLength: =1000
+            OnSelect: =lclShowUpdateAction
+            PaddingLeft: =5
+            PressedBorderColor: =gblPInput.PressedBorderColor
+            PressedColor: =gblPInput.PressedColor
+            PressedFill: =gblPInput.PressedFill
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Size: =gblPInput.Size
+            Tooltip: =
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.3
+            X: =CmbxCategory.X
+            Y: =CmbxCategory.Y + CmbxCategory.Height + 4
+            ZIndex: =54
+
+        TxtConcernDept As text:
+            BorderColor: =gblPCard.BorderColor
+            BorderStyle: =gblPInput.BorderStyle
+            BorderThickness: =gblPInput.BorderThickness
+            Clear: =true
+            Color: =gblPInput.Color
+            Default: |-
+                =If(
+                    lclTransfer,
+                    LookUp(
+                        SAP_TICKETING_email_setup,
+                        ID in ForAll(Split(
+                            CmbxAssignedto.Selected.email_setup_id,
+                            ","
+                        ), {Result: ThisRecord.Value})
+                    ).Department,
+                    LookUp(
+                        SAP_TICKETING_email_setup,
+                        Title in TxtAssignTo.Text
+                    ).Department
+                )
+            DelayOutput: =true
+            DisabledBorderColor: =Self.BorderColor
+            DisabledColor: =Self.Color
+            DisplayMode: = DisplayMode.View
+            EnableSpellCheck: =true
+            Fill: =gblPInput.Fill
+            FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+            Font: =gblPInput.Font
+            FontWeight: =gblPInput.FontWeight
+            Height: =gblPInput.Height +1
+            HoverBorderColor: =gblPInput.HoverBorderColor
+            HoverColor: =gblPInput.HoverColor
+            HoverFill: =gblPInput.HoverFill
+            MaxLength: =1000
+            OnSelect: =lclShowUpdateAction
+            PaddingLeft: =5
+            PressedBorderColor: =gblPInput.PressedBorderColor
+            PressedColor: =gblPInput.PressedColor
+            PressedFill: =gblPInput.PressedFill
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Size: =gblPInput.Size
+            Tooltip: =
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.3
+            X: =CmbxAssignedto.X
+            Y: =CmbxCategory.Y + CmbxCategory.Height + 4
+            ZIndex: =55
+
+        CmbxAssignedto As combobox:
+            BorderColor: =gblPCard.BorderColor
+            BorderStyle: =gblPInput.BorderStyle
+            BorderThickness: =gblPInput.BorderThickness
+            ChevronBackground: =gblPInput.ChevronBackground
+            ChevronDisabledBackground: =RGBA(244, 244, 244, 0)
+            ChevronDisabledFill: =RGBA(166, 166, 166, 0)
+            ChevronFill: =gblPInput.ChevronFill
+            ChevronHoverBackground: =gblPInput.ChevronHoverBackground
+            ChevronHoverFill: =gblPInput.ChevronHoverFill
+            Color: =gblPInput.Color
+            DefaultSelectedItems: =
+            DisabledBorderColor: =Self.BorderColor
+            DisabledColor: =Self.Color
+            DisabledFill: =Self.Fill
+            DisplayFields: =["Title"]
+            Fill: =gblPInput.Fill
+            FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+            Font: =gblPInput.Font
+            Height: =gblPInput.Height
+            HoverBorderColor: =gblPInput.HoverBorderColor
+            HoverColor: =gblPInput.HoverColor
+            HoverFill: =gblPInput.HoverFill
+            InputTextPlaceholder: =""
+            IsSearchable: =false
+            Items: =SortByColumns(ShowColumns(SAP_TICKETING_groupings, "Title", "email_setup_id"), "Title")
+            PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+            PressedBorderColor: =gblPInput.PressedBorderColor
+            PressedColor: =gblPInput.PressedColor
+            PressedFill: =gblPInput.PressedFill
+            SearchFields: =["Title"]
+            SearchItems: =[]
+            SelectionFill: =RGBA(0, 120, 212, 1)
+            SelectionTagColor: =gblPInput.SelectionTagColor
+            SelectionTagFill: =gblPInput.SelectionTagFill
+            SelectMultiple: =false
+            Size: =gblPInput.Size
+            Tooltip: =
+            Visible: =lclShowUpdateAction && lclTransfer
+            Width: =HtmlActionTakenBG.Width * 0.3
+            X: =CmbxSubCategory.X+CmbxSubCategory.Width +10
+            Y: =DataCardKey1_36.Y+DataCardKey1_36.Height+10
+            ZIndex: =56
+
+        TxtAssignTo_transfer As text:
+            BorderColor: =gblPCard.BorderColor
+            BorderStyle: =gblPInput.BorderStyle
+            BorderThickness: =gblPInput.BorderThickness
+            Clear: =true
+            Color: =gblPInput.Color
+            Default: |-
+                =If(
+                    lclTransfer,
+                    Concat(
+                        Filter(
+                            SAP_TICKETING_email_setup,
+                            ID in ForAll(Split(
+                                CmbxAssignedto.Selected.email_setup_id,
+                                ","
+                            ), {Result: ThisRecord.Value})
+                        ),
+                        Title,
+                        ";"
+                    )
+                )
+            DelayOutput: =true
+            DisabledBorderColor: =Self.BorderColor
+            DisabledColor: =Self.Color
+            DisplayMode: = DisplayMode.View
+            EnableSpellCheck: =true
+            Fill: =gblPInput.Fill
+            FocusedBorderThickness: =gblPInput.FocusedBorderThickness
+            Font: =gblPInput.Font
+            FontWeight: =gblPInput.FontWeight
+            Height: =gblPInput.Height +1
+            HoverBorderColor: =gblPInput.HoverBorderColor
+            HoverColor: =gblPInput.HoverColor
+            HoverFill: =gblPInput.HoverFill
+            MaxLength: =1000
+            OnSelect: =lclShowUpdateAction
+            PaddingLeft: =5
+            PressedBorderColor: =gblPInput.PressedBorderColor
+            PressedColor: =gblPInput.PressedColor
+            PressedFill: =gblPInput.PressedFill
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Size: =gblPInput.Size
+            Tooltip: =
+            Visible: =lclShowUpdateAction
+            Width: =HtmlActionTakenBG.Width * 0.3
+            X: =CmbxSubCategory.X
+            Y: =CmbxCategory.Y + CmbxCategory.Height + 4
+            ZIndex: =57
+
